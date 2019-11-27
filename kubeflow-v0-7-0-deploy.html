@@ -98,7 +98,7 @@
 <meta property="og:image" content="https://i.imgur.com/e7UWqaz.png">
 <meta property="og:image" content="https://i.imgur.com/sWTHQRj.png">
 <meta property="og:image" content="https://i.imgur.com/8DZ3RFy.png">
-<meta property="og:updated_time" content="2019-11-27T04:34:52.428Z">
+<meta property="og:updated_time" content="2019-11-27T04:35:15.017Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubeflow v0.7 - Multi-user, auth-enabled 部署與安裝">
 <meta name="twitter:description" content="Kubeflow是一個開源軟體，致力於提供使用者於Kubernetes上快速便捷的部署與管理ML Workflow，而在0.7版最重要的功能即是搭配`Istio`加入的使用者認證與權限管理。此功能讓一個Kubeflow的可以讓多人使用，並透過Group的概念在多個使用者間共享資源與權限，旨在成為一個通用全方位的AI平台。">
@@ -438,7 +438,7 @@
 </ol>
 <p>可以發現兩個人只可以看到自己的notebook。</p>
 <p><img src="https://i.imgur.com/zbm5AZJ.png" alt=""></p>
-<p>此時當demo這個帳號的視窗，<br>嘗試直接使用admin的url <code>http://localhost:8080/_/jupyter/?ns=admin</code><br>查看admin的noteboo會出現如下錯誤。</p>
+<p>此時當demo這個帳號的視窗，<br>嘗試直接使用admin的url <code>http://localhost:8080/_/jupyter/?ns=admin</code><br>查看admin的notebook會出現如下錯誤。</p>
 <p><img src="https://i.imgur.com/xfkkkoP.png" alt=""></p>
 <p>因為demo這個帳號並沒有存取admin資源的權限，也就是無法存取查看admin namespace底下的所有kubernetes資源。</p>
 <h4 id="kubernetes服務隔離"><a href="#kubernetes服務隔離" class="headerlink" title="kubernetes服務隔離"></a>kubernetes服務隔離</h4><p>那如果demo這個帳號打算直接透過url連結admin剛剛創建的notebook？</p>
