@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-tw">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Kubeflow,Kubernetes,Istio,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="介紹Kubeflow是一個開源軟體，致力於提供使用者於Kubernetes上快速便捷的部署與管理ML Workflow。從最開始可以整合Jupyterhub做單機訓練、或是利用tf-operator管理分散式訓練，到最近加入Pipeline功能來整合前面資料處理與後續的模型服務，功能性與規模可以說在這一兩年快速成長，版本也從2018年5月發行的0.1版推進到2019年11月的0.7版，並且預計於">
+<meta name="keywords" content="Kubeflow,Kubernetes,Istio">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubeflow v0.7 - Multi-user, auth-enabled 部署與安裝">
+<meta property="og:url" content="http://yoursite.com/2019/11/27/kubeflow-v0-7-0-deploy/index.html">
+<meta property="og:site_name" content="Distributed World">
+<meta property="og:description" content="介紹Kubeflow是一個開源軟體，致力於提供使用者於Kubernetes上快速便捷的部署與管理ML Workflow。從最開始可以整合Jupyterhub做單機訓練、或是利用tf-operator管理分散式訓練，到最近加入Pipeline功能來整合前面資料處理與後續的模型服務，功能性與規模可以說在這一兩年快速成長，版本也從2018年5月發行的0.1版推進到2019年11月的0.7版，並且預計於">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://i.imgur.com/6kTYwIR.png">
+<meta property="og:image" content="https://i.imgur.com/l9alQ3f.png">
+<meta property="og:image" content="https://i.imgur.com/IdhMthD.png">
+<meta property="og:image" content="https://i.imgur.com/W6kbALk.png">
+<meta property="og:image" content="https://i.imgur.com/RKJaYRn.png">
+<meta property="og:image" content="https://i.imgur.com/zbm5AZJ.png">
+<meta property="og:image" content="https://i.imgur.com/xfkkkoP.png">
+<meta property="og:image" content="https://i.imgur.com/gjmXEjJ.png">
+<meta property="og:image" content="https://i.imgur.com/e7UWqaz.png">
+<meta property="og:image" content="https://i.imgur.com/sWTHQRj.png">
+<meta property="og:image" content="https://i.imgur.com/8DZ3RFy.png">
+<meta property="og:updated_time" content="2019-11-27T02:29:13.361Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kubeflow v0.7 - Multi-user, auth-enabled 部署與安裝">
+<meta name="twitter:description" content="介紹Kubeflow是一個開源軟體，致力於提供使用者於Kubernetes上快速便捷的部署與管理ML Workflow。從最開始可以整合Jupyterhub做單機訓練、或是利用tf-operator管理分散式訓練，到最近加入Pipeline功能來整合前面資料處理與後續的模型服務，功能性與規模可以說在這一兩年快速成長，版本也從2018年5月發行的0.1版推進到2019年11月的0.7版，並且預計於">
+<meta name="twitter:image" content="https://i.imgur.com/6kTYwIR.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/11/27/kubeflow-v0-7-0-deploy/">
+
+
+
+
+
+  <title>Kubeflow v0.7 - Multi-user, auth-enabled 部署與安裝 | Distributed World</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-58777369-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-tw">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Distributed World</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            首頁
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            關於
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            標籤
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            分類
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            歸檔
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/27/kubeflow-v0-7-0-deploy/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jack Lin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/me.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Distributed World">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kubeflow v0.7 - Multi-user, auth-enabled 部署與安裝</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">發表於</span>
+              
+              <time title="創建於" itemprop="dateCreated datePublished" datetime="2019-11-27T10:28:12+08:00">
+                2019-11-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/11/27/kubeflow-v0-7-0-deploy/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/11/27/kubeflow-v0-7-0-deploy/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="https://i.imgur.com/6kTYwIR.png" alt=""></p>
+<h1 id="介紹"><a href="#介紹" class="headerlink" title="介紹"></a>介紹</h1><p>Kubeflow是一個開源軟體，致力於提供使用者於Kubernetes上快速便捷的部署與管理ML Workflow。從最開始可以整合<code>Jupyterhub</code>做單機訓練、或是利用<code>tf-operator</code>管理分散式訓練，到最近加入<code>Pipeline</code>功能來整合前面資料處理與後續的模型服務，功能性與規模可以說在這一兩年快速成長，版本也從2018年5月發行的0.1版推進到2019年11月的0.7版，並且預計於明年1月正式推出1.0版。</p>
+<p>而在0.7版最重要的功能即是搭配<code>Istio</code>加入的<strong>使用者認證</strong>與<strong>權限管理</strong>。此功能讓一個Kubeflow的可以讓多人使用，並透過<strong>Group</strong>的概念在多個使用者間共享資源與權限，旨在成為一個通用全方位的AI平台。</p>
+<p>使用者認證與權限管理由Arrikto團隊實現與維護。</p>
+<h1 id="環境準備"><a href="#環境準備" class="headerlink" title="環境準備"></a>環境準備</h1><p>此部署可以在雲端環境抑或是裸機環境，並沒有限制。請確保部署前Kubernetes集群正常運作。</p>
+<h2 id="下載安裝檔案"><a href="#下載安裝檔案" class="headerlink" title="下載安裝檔案"></a>下載安裝檔案</h2><p>Kubeflow目前透過子專案<code>kfctl</code>來發布與安裝Kubeflow</p>
+<ol>
+<li>下載 kfctl v0.7.0 發布版本 <a href="https://github.com/kubeflow/kubeflow/releases/tag/v0.7.0" target="_blank" rel="noopener">Kubeflow releases page</a></li>
+<li><p>解壓縮<br><code>tar -xvf kfctl_&lt;release tag&gt;_&lt;platform&gt;.tar.gz</code></p>
+</li>
+<li><p>設定環境變數，方便後需部署。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 以利後需使用kfctl指令</span></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="string">"&lt;path-to-kfctl&gt;"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 部署將會使用這個設定檔</span></span><br><span class="line"><span class="built_in">export</span> CONFIG_URI=<span class="string">"https://raw.githubusercontent.com/kubeflow/manifests/dc04ff600cee722d93cf80d413aa73ddd8387f1f/kfdef/kfctl_existing_arrikto.0.7.0.yaml"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Kubeflow部署過程生成的設定檔存放的資料夾名，可以設定成`my-kubeflow`或是`kf-test`</span></span><br><span class="line"><span class="built_in">export</span> KF_NAME=&lt;your choice of name <span class="keyword">for</span> the Kubeflow deployment&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 放置Kubeflow專案的資料夾路徑</span></span><br><span class="line"><span class="built_in">export</span> BASE_DIR=&lt;path to a base directory&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 此次部署Kubeflow的的完整路徑</span></span><br><span class="line"><span class="built_in">export</span> KF_DIR=<span class="variable">$&#123;BASE_DIR&#125;</span>/<span class="variable">$&#123;KF_NAME&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="部署-Kubeflow"><a href="#部署-Kubeflow" class="headerlink" title="部署 Kubeflow"></a>部署 Kubeflow</h1><p>使用官方的kfctl即可方便的一個指令部署。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 來到Kubeflow專案底下</span></span><br><span class="line">mkdir -p <span class="variable">$&#123;KF_DIR&#125;</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$&#123;KF_DIR&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 下載預設的設定檔</span></span><br><span class="line">wget -O kfctl_existing_arrikto.yaml <span class="variable">$CONFIG_URI</span></span><br><span class="line"><span class="built_in">export</span> CONFIG_FILE=<span class="variable">$&#123;KF_DIR&#125;</span>/kfctl_existing_arrikto.yaml</span><br><span class="line"></span><br><span class="line"><span class="comment">#  預設的登錄帳號密碼為admin@kubeflow.org:12341234</span></span><br><span class="line"><span class="comment"># 可以透過更改設定檔設定</span></span><br><span class="line">vim <span class="variable">$CONFIG_FILE</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 解壓縮後的執行檔可能為kfctl-darwin，可以自行修改名字為kfctl，方便指令輸入</span></span><br><span class="line">kfctl apply -V -f <span class="variable">$&#123;CONFIG_FILE&#125;</span></span><br></pre></td></tr></table></figure>
+<p>等候大約幾分鐘後，即會看到以下部署成功的字樣</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INFO[0154] Applied the configuration Successfully!       filename=&quot;cmd/apply.go:72&quot;</span><br></pre></td></tr></table></figure>
+<p>可以檢查所有kubeflow namespace底下的pod來卻人是否部署成功。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get po -n kubeflow</span><br><span class="line">NAME                                                          READY   STATUS    RESTARTS   AGE</span><br><span class="line">admission-webhook-deployment-6cf94887bf-t4zpv                 1/1     Running   0          10h</span><br><span class="line">application-controller-stateful-set-0                         1/1     Running   0          10h</span><br><span class="line">argo-ui-7fd48cdc66-dt6mf                                      1/1     Running   0          10h</span><br><span class="line">centraldashboard-64c4cb4c6-fp6z8                              1/1     Running   0          10h</span><br><span class="line">jupyter-web-app-deployment-5f9bbcb94b-pvn67                   1/1     Running   0          10h</span><br><span class="line">katib-controller-5645cb8675-kk86l                             1/1     Running   1          10h</span><br><span class="line">katib-db-57d7c5b64b-x6qxp                                     1/1     Running   0          10h</span><br><span class="line">katib-manager-5679669f96-vvf92                                1/1     Running   1          10h</span><br><span class="line">katib-ui-68c6747887-2fbjw                                     1/1     Running   0          10h</span><br><span class="line">metadata-db-7f78b5fbf8-cfngw                                  1/1     Running   0          10h</span><br><span class="line">metadata-deployment-6d47b67dcd-lzcng                          1/1     Running   0          10h</span><br><span class="line">metadata-deployment-6d47b67dcd-rzdlv                          1/1     Running   2          10h</span><br><span class="line">metadata-envoy-deployment-75d958657-nb9cg                     1/1     Running   0          10h</span><br><span class="line">metadata-grpc-deployment-9d79d848-csnmj                       1/1     Running   4          10h</span><br><span class="line">metadata-grpc-deployment-9d79d848-zkm7z                       1/1     Running   3          10h</span><br><span class="line">metadata-ui-547b468655-7l9m2                                  1/1     Running   0          10h</span><br><span class="line">minio-d96d4f4cf-9tml2                                         1/1     Running   0          10h</span><br><span class="line">ml-pipeline-86cf8589b9-662mq                                  1/1     Running   0          10h</span><br><span class="line">ml-pipeline-ml-pipeline-visualizationserver-d494fcb84-g9kdr   1/1     Running   0          10h</span><br><span class="line">ml-pipeline-persistenceagent-5c4d6c5b54-qfjm6                 1/1     Running   0          10h</span><br><span class="line">ml-pipeline-scheduledworkflow-7fbfb9c745-7tbcj                1/1     Running   0          10h</span><br><span class="line">ml-pipeline-ui-55cd89c8fc-gf8sc                               1/1     Running   0          10h</span><br><span class="line">ml-pipeline-viewer-controller-deployment-68c746f8d5-hvzrs     1/1     Running   0          10h</span><br><span class="line">mysql-74578b646b-tbsmk                                        1/1     Running   0          10h</span><br><span class="line">notebook-controller-deployment-6f45dbcd6d-k6jrw               1/1     Running   0          10h</span><br><span class="line">profiles-deployment-6f7ddff899-n4hwh                          2/2     Running   0          10h</span><br><span class="line">pytorch-operator-7fcb66d589-xb7bp                             1/1     Running   0          10h</span><br><span class="line">seldon-operator-controller-manager-0                          1/1     Running   1          10h</span><br><span class="line">spartakus-volunteer-ddc6fcd5f-pqs6z                           1/1     Running   0          10h</span><br><span class="line">tensorboard-55d9cd67bc-59nqx                                  0/1     Pending   0          10h</span><br><span class="line">tf-job-operator-76dd589674-dkpqp                              1/1     Running   0          10h</span><br><span class="line">workflow-controller-645f7bd769-nznh4                          1/1     Running   0          10h</span><br></pre></td></tr></table></figure>
+<p>因為v0.7.0版會同時部署istio，因此也可以檢查istio相關資源是否成功部署。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get po -n istio-system</span><br></pre></td></tr></table></figure>
+<h1 id="使用Kubeflow"><a href="#使用Kubeflow" class="headerlink" title="使用Kubeflow"></a>使用Kubeflow</h1><h2 id="使用預設帳號密碼登入"><a href="#使用預設帳號密碼登入" class="headerlink" title="使用預設帳號密碼登入"></a>使用預設帳號密碼登入</h2><p>首先透過port-forward來使用Kubeflow服務</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 透過localhost:8080連上</span><br><span class="line">kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80</span><br></pre></td></tr></table></figure>
+<p>接著會出現以下畫面<br><img src="https://i.imgur.com/l9alQ3f.png" alt=""></p>
+<p>使用帳號密碼 <a href="mailto:`admin@kubeflow.org" target="_blank" rel="noopener">`admin@kubeflow.org</a>:12341234`即可登入。</p>
+<p>接著會出現下面兩個對話筐，都直接確認即可。第一次登入即會幫該使用者也就是<a href="mailto:`admin@kubeflow.org" target="_blank" rel="noopener">`admin@kubeflow.org</a><code>創建他專屬的namespace</code>admin`<br><img src="https://i.imgur.com/IdhMthD.png" alt=""></p>
+<p>至此Kubeflow即部署完成，可以從<code>Dashboard</code>使用各種服務包含<code>Jupyter Notebook</code>與<code>Pipeline</code>。<br><img src="https://i.imgur.com/W6kbALk.png" alt=""></p>
+<h1 id="多使用者情境"><a href="#多使用者情境" class="headerlink" title="多使用者情境"></a>多使用者情境</h1><p>首先直接看Kubeflow官方的多使用者情境示意圖。</p>
+<p><img src="https://i.imgur.com/RKJaYRn.png" alt=""></p>
+<p>如同剛剛提到的，在第一次登入後即會創建該使用者的namespace。接著使用者的所有操作皆會被限制在該namespace中，包含創建的<code>notebook</code>與<code>pipeline</code>都會在該namespace底下，與其他使用者隔離。</p>
+<p>底下我們透過新增一個使用者來探索多使用者情境。</p>
+<h2 id="增加一個新使用者"><a href="#增加一個新使用者" class="headerlink" title="增加一個新使用者"></a>增加一個新使用者</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 取得目前dex使用的設定檔</span></span><br><span class="line">kubectl get configmap dex -n auth -o jsonpath=<span class="string">'&#123;.data.config\.yaml&#125;'</span> &gt; dex-config.yaml</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改 dex-config.yaml</span></span><br><span class="line"><span class="comment"># 新增一個使用者，密碼必須使用bcrypt做hash，可以使用此網站: https://passwordhashing.com/BCrypt</span></span><br><span class="line"><span class="comment"># 也可以直接使用我這邊提供的做測試</span></span><br><span class="line"><span class="comment"># 帳號: demo@kubeflow.org 密碼:demo</span></span><br><span class="line"></span><br><span class="line">vim dex-config.yaml</span><br><span class="line">staticPasswords:</span><br><span class="line">- email: admin@kubeflow.org</span><br><span class="line">  <span class="built_in">hash</span>: <span class="variable">$2y</span><span class="variable">$12</span><span class="variable">$ruoM7FqXrpVgaol44eRZW</span>.4HWS8SAvg6KYVVSCIwKQPBmTpCm.EeO</span><br><span class="line">  username: admin</span><br><span class="line">  userID: 08a8684b-db88-4b73-90a9-3cd1661f5466</span><br><span class="line">- email: demo@kubeflow.org</span><br><span class="line">  <span class="built_in">hash</span>: <span class="variable">$2b</span><span class="variable">$10</span><span class="variable">$uVAyiJKu</span>.9fFICQOixELYu1VLvHnYmvLX.UMktzY0ImLqR5gz2qVC</span><br><span class="line">  username: demo</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更新ConfigMap</span></span><br><span class="line">kubectl create configmap dex --from-file=config.yaml=dex-config.yaml -n auth --dry-run -oyaml | kubectl apply -f -</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更新dex這個pod來使用最新的ConfigMap</span></span><br><span class="line">kubectl rollout status deployment dex -n auth</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果沒有效果，直接刪除namespace auth 底下的的dex pod，讓deployment重新啟動一個</span></span><br></pre></td></tr></table></figure>
+<h2 id="多使用者隔離"><a href="#多使用者隔離" class="headerlink" title="多使用者隔離"></a>多使用者隔離</h2><h3 id="kubernetes-資源隔離"><a href="#kubernetes-資源隔離" class="headerlink" title="kubernetes 資源隔離"></a>kubernetes 資源隔離</h3><p>開啟兩個視窗一個使用<code>admin</code>登入，另一個使用<code>demo</code>登入。首先在左上角可以選擇namespace，目前只能選擇自己的namespace。</p>
+<ol>
+<li>admin 開啟一個 notebook</li>
+<li>demo 開啟一個 notebook</li>
+</ol>
+<p>可以發現兩個人只可以看到自己的notebook。</p>
+<p><img src="https://i.imgur.com/zbm5AZJ.png" alt=""></p>
+<p>此時當demo這個帳號的視窗，<br>嘗試直接使用admin的url <code>http://localhost:8080/_/jupyter/?ns=admin</code><br>查看admin的noteboo會出現如下錯誤。</p>
+<p><img src="https://i.imgur.com/xfkkkoP.png" alt=""></p>
+<p>因為demo這個帳號並沒有存取admin資源的權限，也就是無法存取查看admin namespace底下的所有kubernetes資源。</p>
+<h3 id="kubernetes服務隔離"><a href="#kubernetes服務隔離" class="headerlink" title="kubernetes服務隔離"></a>kubernetes服務隔離</h3><p>那如果demo這個帳號打算直接透過url連結admin剛剛創建的notebook？</p>
+<p><img src="https://i.imgur.com/gjmXEjJ.png" alt=""></p>
+<p>會出現如上的示意圖顯示RBAC Denied，也就是說demo也不能連線使用admin namespace底下的服務。</p>
+<h3 id="共享資源"><a href="#共享資源" class="headerlink" title="共享資源"></a>共享資源</h3><p>那如果我們希望像上面多使用者情境的示意圖中，有一個共享的資源該如何實作呢？</p>
+<ol>
+<li>回到admin這個帳號的主頁</li>
+<li>選擇左邊欄的 <code>Manage Contributors</code></li>
+<li>新增 Contributor <a href="mailto:`demo@kubeflow.org" target="_blank" rel="noopener">`demo@kubeflow.org</a>`</li>
+</ol>
+<p><img src="https://i.imgur.com/e7UWqaz.png" alt=""></p>
+<p>此時demo這個帳號可以共享與使用admin的資源與服務了。</p>
+<ul>
+<li>demo帳號左上角可以選擇admin namespace，且可以查看admin的notebook了。<br><img src="https://i.imgur.com/sWTHQRj.png" alt=""></li>
+</ul>
+<ul>
+<li>另外我們在測試使用url使用admin notebook。<br><img src="https://i.imgur.com/8DZ3RFy.png" alt=""></li>
+</ul>
+<h1 id="小結"><a href="#小結" class="headerlink" title="小結"></a>小結</h1><p>以上就是 Kubeflow v0.7.0 多使用者情境，這個可以算是邁向v1.0前最重要的新加入功能，已經可以說是production ready了。本篇的部署方式是使用Dex與靜態檔案，而你也可以替換Dex的Backend串接第三方的認證管理，例如Google或是Github。</p>
+<p>作為Kubeflow Member，也聊一下關於Kubeflow的未來規劃。目前基本的功能都可以說穩定且完整了，未來將朝向critical user journeys的完善，例如如何讓notebook開發模型到送上pipeline進行訓練的流程更為簡單。相關影片可以參考: <a href="https://www.youtube.com/watch?v=C9rJzTzVzvQ" target="_blank" rel="noopener">https://www.youtube.com/watch?v=C9rJzTzVzvQ</a></p>
+<p>另外，本人此次參與2019 KubeConNA也發現導入Kubeflow的公司越來越多了，除了直接使用外，也有許多團隊嘗試將Kubeflow結合內部的系統已滿組內部使用需求，例如: Uber、Spotify與Lyft等都有相關的演講可以參考。</p>
+<p>因為Kubeflow實作<strong>使用者認證</strong>的方式是搭配<code>Istio</code>實作，算是一個通用且蠻有參考價值的做法，接下來兩篇將會詳解整個實作，提供大家一個在Kubernetes上實作多使用者隔離的方法。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Kubeflow/" rel="tag"># Kubeflow</a>
+          
+            <a href="/tags/Kubernetes/" rel="tag"># Kubernetes</a>
+          
+            <a href="/tags/Istio/" rel="tag"># Istio</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/12/kubeflow-istio-authnz-2/" rel="next" title="kubeflow-istio-authnz-2">
+                <i class="fa fa-chevron-left"></i> kubeflow-istio-authnz-2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div style="text-align:center;">
+        <button class="btn" id="load-disqus" onclick="disqus.load();">加载 Disqus 评论</button>
+      </div>
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            本站概覽
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/me.jpg" alt="Jack Lin">
+            
+              <p class="site-author-name" itemprop="name">Jack Lin</p>
+              <p class="site-description motion-element" itemprop="description">目前任職於 InfuseAI. 專注於Kubeflow與Kubernetes. 同時也是 Kubeflow member與Kubeflow/tf-operator reviewer.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">文章</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分類</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">標籤</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/ChanYiLin" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i></a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.linkedin.com/in/jack-lin-a43506a2/" target="_blank" title="Linkedin">
+                      
+                        <i class="fa fa-fw fa-linkedin"></i></a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.facebook.com/yourname" target="_blank" title="FB Page">
+                      
+                        <i class="fa fa-fw fa-facebook"></i></a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#介紹"><span class="nav-number">1.</span> <span class="nav-text">介紹</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#環境準備"><span class="nav-number">2.</span> <span class="nav-text">環境準備</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#下載安裝檔案"><span class="nav-number">2.1.</span> <span class="nav-text">下載安裝檔案</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#部署-Kubeflow"><span class="nav-number">3.</span> <span class="nav-text">部署 Kubeflow</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用Kubeflow"><span class="nav-number">4.</span> <span class="nav-text">使用Kubeflow</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用預設帳號密碼登入"><span class="nav-number">4.1.</span> <span class="nav-text">使用預設帳號密碼登入</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多使用者情境"><span class="nav-number">5.</span> <span class="nav-text">多使用者情境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#增加一個新使用者"><span class="nav-number">5.1.</span> <span class="nav-text">增加一個新使用者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多使用者隔離"><span class="nav-number">5.2.</span> <span class="nav-text">多使用者隔離</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#kubernetes-資源隔離"><span class="nav-number">5.2.1.</span> <span class="nav-text">kubernetes 資源隔離</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#kubernetes服務隔離"><span class="nav-number">5.2.2.</span> <span class="nav-text">kubernetes服務隔離</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#共享資源"><span class="nav-number">5.2.3.</span> <span class="nav-text">共享資源</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小結"><span class="nav-number">6.</span> <span class="nav-text">小結</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jack Lin</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 強力驅動</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主題 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://jacklinblog-1.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2019/11/27/kubeflow-v0-7-0-deploy/';
+          this.page.identifier = '2019/11/27/kubeflow-v0-7-0-deploy/';
+          this.page.title = 'Kubeflow v0.7 - Multi-user, auth-enabled 部署與安裝';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://jacklinblog-1.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
