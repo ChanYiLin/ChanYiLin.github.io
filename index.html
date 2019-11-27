@@ -313,6 +313,39 @@
           </span>
 
           
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分類於</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index">
+                    <span itemprop="name">Kubernetes</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/Kubeflow/" itemprop="url" rel="index">
+                    <span itemprop="name">Kubeflow</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -446,6 +479,39 @@
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分類於</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index">
+                    <span itemprop="name">Kubernetes</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/Kubeflow/" itemprop="url" rel="index">
+                    <span itemprop="name">Kubeflow</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -644,6 +710,39 @@
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分類於</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index">
+                    <span itemprop="name">Kubernetes</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/Kubeflow/" itemprop="url" rel="index">
+                    <span itemprop="name">Kubeflow</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -940,7 +1039,7 @@
 </li>
 <li><p>接下來安裝Argo Controller 與 UI</p>
  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl create ns argo</span><br><span class="line">kubectl apply -n argo -f https://raw.githubusercontent.com/argoproj/argo/v2.2.1/manifests/install.yaml</span><br></pre></td></tr></table></figure>
-<p> **NOTE: 因為上面的insall.yaml會需要在你的k8s中創建clusterrole。因此如果使用的是GKE，這邊需要特別開通權限。</p>
+<p> <strong>NOTE: 因為上面的insall.yaml會需要在你的k8s中創建clusterrole。因此如果使用的是GKE，這邊需要特別開通權限。</strong></p>
  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl create clusterrolebinding YOURNAME-cluster-admin-binding --clusterrole=cluster-admin --user=YOUREMAIL@gmail.com</span><br></pre></td></tr></table></figure>
 <p> 安裝好後就會在k8s下面的argo namespace看到以下的components</p>
  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">NAME                         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">deploy/argo-ui               1         1         1            1           84d</span><br><span class="line">deploy/workflow-controller   1         1         1            1           84d</span><br><span class="line"></span><br><span class="line">NAME                               DESIRED   CURRENT   READY     AGE</span><br><span class="line">rs/argo-ui-65bb8cf7f6              1         1         1         35s</span><br><span class="line">rs/argo-ui-6bb9c4485f              0         0         0         84d</span><br><span class="line">rs/workflow-controller-7f4dd6bd9   0         0         0         84d</span><br><span class="line">rs/workflow-controller-8fb5fb5d5   1         1         1         33s</span><br><span class="line"></span><br><span class="line">NAME                                     READY     STATUS        RESTARTS   AGE</span><br><span class="line">po/argo-ui-65bb8cf7f6-q2r59              1/1       Running       0          35s</span><br><span class="line">po/argo-ui-6bb9c4485f-7v2d5              1/1       Terminating   0          42d</span><br><span class="line">po/workflow-controller-8fb5fb5d5-spq99   1/1       Running       0          33s</span><br><span class="line"></span><br><span class="line">NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE</span><br><span class="line">svc/argo-ui   ClusterIP   10.27.255.240   &lt;none&gt;        80/TCP    84d</span><br></pre></td></tr></table></figure>
@@ -1321,7 +1420,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">分類</span>
                 </a>
               </div>

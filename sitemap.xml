@@ -2,9 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://chanyilin.github.io/argo.html</loc>
+    
+    <lastmod>2019-11-27T04:12:10.484Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://chanyilin.github.io/kubeflow-istio-authnz-2.html</loc>
+    
+    <lastmod>2019-11-27T04:11:45.414Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://chanyilin.github.io/kubeflow-istio-authnz.html</loc>
+    
+    <lastmod>2019-11-27T04:11:42.550Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://chanyilin.github.io/kubeflow-v0-7-0-deploy.html</loc>
     
-    <lastmod>2019-11-27T03:50:27.907Z</lastmod>
+    <lastmod>2019-11-27T04:11:39.144Z</lastmod>
     
   </url>
   
@@ -12,27 +33,6 @@
     <loc>https://chanyilin.github.io/about/index.html</loc>
     
     <lastmod>2019-11-27T02:30:52.488Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://chanyilin.github.io/kubeflow-istio-authnz-2.html</loc>
-    
-    <lastmod>2019-11-12T09:12:38.366Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://chanyilin.github.io/kubeflow-istio-authnz.html</loc>
-    
-    <lastmod>2019-11-12T08:16:30.214Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://chanyilin.github.io/argo.html</loc>
-    
-    <lastmod>2019-02-07T00:48:04.090Z</lastmod>
     
   </url>
   
