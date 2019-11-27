@@ -2,56 +2,56 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://yoursite.com/about/index.html</loc>
+    <loc>https://chanyilin.github.io/about/index.html</loc>
     
     <lastmod>2019-11-27T02:30:52.488Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://yoursite.com/2019/11/27/kubeflow-v0-7-0-deploy/</loc>
+    <loc>https://chanyilin.github.io/2019/11/27/kubeflow-v0-7-0-deploy/</loc>
     
     <lastmod>2019-11-27T02:29:13.361Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://yoursite.com/2019/11/12/kubeflow-istio-authnz-2/</loc>
+    <loc>https://chanyilin.github.io/2019/11/12/kubeflow-istio-authnz-2/</loc>
     
     <lastmod>2019-11-12T09:12:38.366Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://yoursite.com/2019/11/12/kubeflow-istio-authnz/</loc>
+    <loc>https://chanyilin.github.io/2019/11/12/kubeflow-istio-authnz/</loc>
     
     <lastmod>2019-11-12T08:16:30.214Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://yoursite.com/2019/02/07/argo/</loc>
+    <loc>https://chanyilin.github.io/2019/02/07/argo/</loc>
     
     <lastmod>2019-02-07T00:48:04.090Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://yoursite.com/categories/index.html</loc>
+    <loc>https://chanyilin.github.io/categories/index.html</loc>
     
     <lastmod>2018-11-15T00:51:58.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/index.html</loc>
+    <loc>https://chanyilin.github.io/tags/index.html</loc>
     
     <lastmod>2018-11-15T00:51:32.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://yoursite.com/2018/11/15/OpenStack-oslo-config/</loc>
+    <loc>https://chanyilin.github.io/2018/11/15/OpenStack-oslo-config/</loc>
     
     <lastmod>2018-11-15T00:49:10.000Z</lastmod>
     
