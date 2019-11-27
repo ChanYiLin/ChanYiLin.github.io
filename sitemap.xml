@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://chanyilin.github.io/kubeflow-v0-7-0-deploy.html</loc>
+    
+    <lastmod>2019-11-27T04:24:05.216Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://chanyilin.github.io/argo.html</loc>
     
     <lastmod>2019-11-27T04:12:10.484Z</lastmod>
@@ -19,13 +26,6 @@
     <loc>https://chanyilin.github.io/kubeflow-istio-authnz.html</loc>
     
     <lastmod>2019-11-27T04:11:42.550Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://chanyilin.github.io/kubeflow-v0-7-0-deploy.html</loc>
-    
-    <lastmod>2019-11-27T04:11:39.144Z</lastmod>
     
   </url>
   
