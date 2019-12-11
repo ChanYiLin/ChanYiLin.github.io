@@ -4,97 +4,56 @@
 
 
 
-
-
-
-
-
-
-
-  
-
-
-<html class="theme-next muse use-motion" lang="zh-tw">
-<head><meta name="generator" content="Hexo 3.8.0">
+<html lang="zh-tw">
+<head>
   <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
-
-<link rel="stylesheet" href="/css/main.css?v=7.1.0">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.0">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.0">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.0">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
-
-
-
-
-
-
-
-<script id="hexo.configurations">
+<script id="hexo-configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
     scheme: 'Muse',
-    version: '7.1.0',
-    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
-    back2top: true,
-    back2top_sidebar: false,
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
     fancybox: false,
-    fastclick: false,
+    mediumzoom: false,
     lazyload: false,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    pangu: false,
     algolia: {
-      applicationID: '',
+      appID: '',
       apiKey: '',
       indexName: '',
       hits: {"per_page":10},
       labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
   };
 </script>
-
-
-  
-
-
-
 
   <meta name="description" content="昨天提到了透過Kubernetes RBAC與Istio ServiceRole/ServiceRoleBinding來做服務與資源的權限認證，以達成Multi-user情境。今天來說說如何進行認證，以及這個獨立的`AuthService`是什麼。">
 <meta name="keywords" content="Kubeflow,Kubeflow v0.7,部署,安裝,Kubernetes,Istio,Multi User">
@@ -114,29 +73,23 @@
 <meta name="twitter:title" content="Kubeflow如何搭配Istio實作Multi-user認證與權限管理(下)">
 <meta name="twitter:description" content="昨天提到了透過Kubernetes RBAC與Istio ServiceRole/ServiceRoleBinding來做服務與資源的權限認證，以達成Multi-user情境。今天來說說如何進行認證，以及這個獨立的`AuthService`是什麼。">
 <meta name="twitter:image" content="https://i.imgur.com/bUZsAsI.png">
-
-
-
-
-
-  
-  
   <link rel="canonical" href="https://chanyilin.github.io/kubeflow-istio-authnz-2">
 
 
-
-<script id="page.configurations">
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
   };
 </script>
 
   <title>Kubeflow如何搭配Istio實作Multi-user認證與權限管理(下) | Distributed World</title>
+  <meta name="generator" content="Hexo 3.8.0">
   
-
-
-
-
 
 
 
@@ -147,7 +100,6 @@
 
   <noscript>
   <style>
-  .use-motion .motion-element,
   .use-motion .brand,
   .use-motion .menu-item,
   .sidebar-inner,
@@ -156,7 +108,7 @@
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-title { opacity: initial; }
+  .use-motion .collection-header { opacity: initial; }
 
   .use-motion .logo,
   .use-motion .site-title,
@@ -172,30 +124,21 @@
 
 </head>
 
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-tw">
-
-  
-  
-    
-  
-
-  <div class="container sidebar-position-left page-post-detail">
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-tw">
+  <div class="container use-motion">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
   <div class="site-meta">
-    
 
-    <div class="custom-logo-site-title">
+    <div>
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Distributed World</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
-    
-    
   </div>
 
   <div class="site-nav-toggle">
@@ -208,94 +151,58 @@
 </div>
 
 
-
 <nav class="site-nav">
   
-    <ul id="menu" class="menu">
+  <ul id="menu" class="menu">
+      
+      
       
         
-        
-        
-          
-          <li class="menu-item menu-item-home">
-
-    
-    
-    
+        <li class="menu-item menu-item-home">
       
-    
-
     
 
     <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
 
   </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-archives">
-
-    
-    
-    
       
-    
-
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
     
 
     <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
 
   </li>
+  </ul>
 
-      
-      
-    </ul>
-  
-
-  
     
 
-  
-
-  
 </nav>
-
-
-
-  
-
-
-
 </div>
     </header>
 
     
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
 
 
     <main id="main" class="main">
       <div class="main-inner">
         <div class="content-wrap">
-          
           <div id="content" class="content">
             
 
   <div id="posts" class="posts-expand">
-    
-
-  
-
+      <article itemscope="" itemtype="http://schema.org/Article">
   
   
   
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
+  <div class="post-block post">
     <link itemprop="mainEntityOfPage" href="https://chanyilin.github.io/kubeflow-istio-authnz-2.html">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -307,71 +214,43 @@
     <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Distributed World">
     </span>
-
-    
       <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Kubeflow如何搭配Istio實作Multi-user認證與權限管理(下)
 
-        
-        
-          <h1 class="post-title" itemprop="name headline">Kubeflow如何搭配Istio實作Multi-user認證與權限管理(下)
-
-              
-            
-          </h1>
-        
+          
+        </h1>
 
         <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
+              <span class="post-meta-item-text">Posted on</span>
 
               
                 
               
 
               <time title="Created: 2019-11-12 16:17:10" itemprop="dateCreated datePublished" datetime="2019-11-12T16:17:10+08:00">2019-11-12</time>
+            </span>
+          
             
 
             
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
+              <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
+                <span class="post-meta-item-text">Edited on</span>
                 <time title="Modified: 2019-12-08 00:21:22" itemprop="dateModified" datetime="2019-12-08T00:21:22+08:00">2019-12-08</time>
-              
+              </span>
             
-          </span>
-
           
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a></span>
 
@@ -389,32 +268,16 @@
           
 
           
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
             <div class="post-description">昨天提到了透過Kubernetes RBAC與Istio ServiceRole/ServiceRoleBinding來做服務與資源的權限認證，以達成Multi-user情境。今天來說說如何進行認證，以及這個獨立的`AuthService`是什麼。</div>
           
 
         </div>
       </header>
-    
 
     
     
     
     <div class="post-body" itemprop="articleBody">
-
-      
-      
 
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>昨天提到了透過<code>Kubernetes RBAC</code>與<code>Istio ServiceRole/ServiceRoleBinding</code>來做服務與資源的權限認證，以達成<strong>Multi-user</strong>情境。</p>
@@ -487,85 +350,66 @@
 <p>kfam/bindings.go<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *BindingClient)</span> <span class="title">Create</span><span class="params">(binding *Binding, userIdHeader <span class="keyword">string</span>, userIdPrefix <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> permission check before go ahead</span></span><br><span class="line">    bindingName, err := getBindingName(binding)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    roleBinding := rbacv1.RoleBinding&#123;</span><br><span class="line">        ObjectMeta: metav1.ObjectMeta&#123;</span><br><span class="line">            Annotations: <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;USER: binding.User.Name, ROLE: binding.RoleRef.Name&#125;,</span><br><span class="line">            Name: bindingName,</span><br><span class="line">        &#125;,</span><br><span class="line">        RoleRef: rbacv1.RoleRef&#123;</span><br><span class="line">            APIGroup: binding.RoleRef.APIGroup,</span><br><span class="line">            Kind: binding.RoleRef.Kind,</span><br><span class="line">            Name: roleBindingNameMap[binding.RoleRef.Name],</span><br><span class="line">        &#125;,</span><br><span class="line">        Subjects: []rbacv1.Subject&#123;</span><br><span class="line">            *binding.User,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;</span><br><span class="line">    _, err = c.kubeClient.RbacV1().RoleBindings(binding.ReferredNamespace).Create(&amp;roleBinding)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// create istio service role binding</span></span><br><span class="line">    istioServiceRoleBinding := &amp;istiorbac.ServiceRoleBinding&#123;</span><br><span class="line">        ObjectMeta: metav1.ObjectMeta&#123;</span><br><span class="line">            Annotations: <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;USER: binding.User.Name, ROLE: binding.RoleRef.Name&#125;,</span><br><span class="line">            Name:      bindingName,</span><br><span class="line">            Namespace: binding.ReferredNamespace,</span><br><span class="line">        &#125;,</span><br><span class="line">        Spec: istiorbac.ServiceRoleBindingSpec&#123;</span><br><span class="line">            Subjects: []*istiorbac.Subject&#123;</span><br><span class="line">                &#123;</span><br><span class="line">                    Properties: <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;fmt.Sprintf(<span class="string">"request.headers[%v]"</span>, userIdHeader): userIdPrefix + binding.User.Name&#125;,</span><br><span class="line">                &#125;,</span><br><span class="line">            &#125;,</span><br><span class="line">            RoleRef: &amp;istiorbac.RoleRef&#123;</span><br><span class="line">                Kind: <span class="string">"ServiceRole"</span>,</span><br><span class="line">                Name: SERVICEROLEISTIO,</span><br><span class="line">            &#125;,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;</span><br><span class="line">    result := istiorbac.ServiceRoleBinding&#123;&#125;</span><br><span class="line">    <span class="keyword">return</span> c.restClient.</span><br><span class="line">        Post().</span><br><span class="line">        Namespace(binding.ReferredNamespace).</span><br><span class="line">        Resource(ServiceRoleBinding).</span><br><span class="line">        Body(istioServiceRoleBinding).</span><br><span class="line">        Do().</span><br><span class="line">        Into(&amp;result)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h1 id="小結"><a href="#小結" class="headerlink" title="小結"></a>小結</h1><p>透過今天這一篇，我們就完整暸解Kubeflow如何利用Istio來進行認證。並透過完整的身份管理來建構出Multi-user與Group的使用情境。<br>這個方法我認為非常推薦，因為全程幾乎只用到K8s與Istio的RBAC即做到使用者權限管理，而這些是K8s上面的資源與物件就可以定義，並不需要引入第三方的服務來設定與定義，例如使用OpenStack Keystone這樣的服務，因此實作方面也非常簡單。<br>另外未來除了權限的設定外，還可以在Profile CRD中設定每一個使用者可以使用的資源，例如CPU與Mem，如以下的<a href="https://github.com/kubeflow/kubeflow/blob/master/components/profile-controller/config/samples/profile_v1beta1_profile.yaml" target="_blank" rel="noopener">範例</a>，可以說完全利用K8s Native的方法實作了認證、權限與資源限制的方法，值得大家學習。</p>
 
-      
     </div>
 
     
-
     
     
-    
-
-    
-
-    
+        
       
-    
-    
 
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
+      <footer class="post-footer">
           
-            <a href="/tags/Kubeflow/" rel="tag"># Kubeflow</a>
-          
-            <a href="/tags/Kubernetes/" rel="tag"># Kubernetes</a>
-          
-            <a href="/tags/Istio/" rel="tag"># Istio</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
             
-              <a href="/kubeflow-istio-authnz.html" rel="next" title="Kubeflow如何搭配Istio實作Multi-user認證與權限管理(上)">
-                <i class="fa fa-chevron-left"></i> Kubeflow如何搭配Istio實作Multi-user認證與權限管理(上)
-              </a>
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Kubeflow/" rel="tag"># Kubeflow</a>
+            
+              <a href="/tags/Kubernetes/" rel="tag"># Kubernetes</a>
+            
+              <a href="/tags/Istio/" rel="tag"># Istio</a>
             
           </div>
+        
 
-          <span class="post-nav-divider"></span>
+        
 
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/kubeflow-v0-7-0-deploy.html" rel="prev" title="Kubeflow v0.7 - Multi-user, auth-enabled 部署與安裝">
-                Kubeflow v0.7 - Multi-user, auth-enabled 部署與安裝 <i class="fa fa-chevron-right"></i>
-              </a>
-            
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/kubeflow-istio-authnz.html" rel="next" title="Kubeflow如何搭配Istio實作Multi-user認證與權限管理(上)">
+                  <i class="fa fa-chevron-left"></i> Kubeflow如何搭配Istio實作Multi-user認證與權限管理(上)
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/kubeflow-v0-7-0-deploy.html" rel="prev" title="Kubeflow v0.7 - Multi-user, auth-enabled 部署與安裝">
+                  Kubeflow v0.7 - Multi-user, auth-enabled 部署與安裝 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
           </div>
-        </div>
-      
-
-      
-      
-    </footer>
+        
+      </footer>
+    
   </div>
   
   
   
   </article>
 
-
   </div>
 
 
           </div>
           
 
-  
-
-
-
         </div>
-        
           
   
   <div class="sidebar-toggle">
@@ -576,153 +420,114 @@
     </div>
   </div>
 
-  <aside id="sidebar" class="sidebar">
+  <aside class="sidebar">
     <div class="sidebar-inner">
-
+        
+        
+        
+        
       
 
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            Table of Contents
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            Overview
-          </li>
-        </ul>
-      
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Istio-Gateway-and-EnvoyFilter-做認證"><span class="nav-number">2.</span> <span class="nav-text">Istio-Gateway and EnvoyFilter 做認證</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AuthService-and-OIDC-Workflow"><span class="nav-number">2.1.</span> <span class="nav-text">AuthService and OIDC Workflow</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kfam"><span class="nav-number">3.</span> <span class="nav-text">Kfam</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#介紹"><span class="nav-number">3.1.</span> <span class="nav-text">介紹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不屬於該Group"><span class="nav-number">3.2.</span> <span class="nav-text">不屬於該Group</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#直接看程式碼吧"><span class="nav-number">3.2.1.</span> <span class="nav-text">直接看程式碼吧</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#將使用者加入某一個group"><span class="nav-number">3.3.</span> <span class="nav-text">將使用者加入某一個group</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#直接看程式碼吧-1"><span class="nav-number">3.3.1.</span> <span class="nav-text">直接看程式碼吧</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小結"><span class="nav-number">4.</span> <span class="nav-text">小結</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
 
       <div class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <p class="site-author-name" itemprop="name">Jack Lin</p>
-              <div class="site-description motion-element" itemprop="description">目前任職於 InfuseAI. 專注於Kubeflow與Kubernetes. 同時也是 Kubeflow member與Kubeflow/tf-operator reviewer.</div>
-          </div>
-
-          
-            <nav class="site-state motion-element">
-              
-                <div class="site-state-item site-state-posts">
-                
-                  <a href="/archives/">
-                
-                    <span class="site-state-item-count">5</span>
-                    <span class="site-state-item-name">posts</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-categories">
-                  
-                    
-                      <a href="/categories/">
-                    
-                  
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">7</span>
-                    <span class="site-state-item-name">categories</span>
-                  </a>
-                </div>
-              
-
-              
-                
-                
-                <div class="site-state-item site-state-tags">
-                  
-                    
-                      <a href="/tags/">
-                    
-                  
-                    
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">7</span>
-                    <span class="site-state-item-name">tags</span>
-                  </a>
-                </div>
-              
-            </nav>
-          
-
-          
-
-          
-
-          
-
-          
-
-          
-          
-
-          
-            
-          
-          
-
-        </div>
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jack Lin</p>
+  <div class="site-description" itemprop="description">目前任職於 InfuseAI. 專注於Kubeflow與Kubernetes. 同時也是 Kubeflow member與Kubeflow/tf-operator reviewer.</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
       </div>
-
+    
       
-      <!--noindex-->
-        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-            
-            
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Istio-Gateway-and-EnvoyFilter-做認證"><span class="nav-number">2.</span> <span class="nav-text">Istio-Gateway and EnvoyFilter 做認證</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AuthService-and-OIDC-Workflow"><span class="nav-number">2.1.</span> <span class="nav-text">AuthService and OIDC Workflow</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kfam"><span class="nav-number">3.</span> <span class="nav-text">Kfam</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#介紹"><span class="nav-number">3.1.</span> <span class="nav-text">介紹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不屬於該Group"><span class="nav-number">3.2.</span> <span class="nav-text">不屬於該Group</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#直接看程式碼吧"><span class="nav-number">3.2.1.</span> <span class="nav-text">直接看程式碼吧</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#將使用者加入某一個group"><span class="nav-number">3.3.</span> <span class="nav-text">將使用者加入某一個group</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#直接看程式碼吧-1"><span class="nav-number">3.3.1.</span> <span class="nav-text">直接看程式碼吧</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小結"><span class="nav-number">4.</span> <span class="nav-text">小結</span></a></li></ol></div>
-            
-
-          </div>
-        </div>
-      <!--/noindex-->
       
-
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
       
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+      </div>
 
     </div>
   </aside>
-  
+  <div id="sidebar-dimmer"></div>
 
 
-        
       </div>
     </main>
 
@@ -733,27 +538,16 @@
     <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Jack Lin</span>
-
-  
-
-  
 </div>
-
-
   <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
-
-
-
   <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.0</div>
-
-
-
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
 
         
+
+
+
+
 
 
 
@@ -765,131 +559,41 @@
         
       </div>
     </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
-    
-
-    
-
-    
   </div>
 
   
 
-<script>
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  <script src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
   <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
   <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-
-  
-
-
-  <script src="/js/utils.js?v=7.1.0"></script>
-
-  <script src="/js/motion.js?v=7.1.0"></script>
-
-
-
-  
-  
-
-
-  <script src="/js/schemes/muse.js?v=7.1.0"></script>
-
-
-
-  
-  <script src="/js/scrollspy.js?v=7.1.0"></script>
-<script src="/js/post-details.js?v=7.1.0"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
 
 
 
   
 
 
-  <script src="/js/next-boot.js?v=7.1.0"></script>
-
-
-  
-
-  
-
-  
-
-  
-
-
-  
-
-
-  
 
 
 
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
 
-  
+
+
+
+
 
   
 
