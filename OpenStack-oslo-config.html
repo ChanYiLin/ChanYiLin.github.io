@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-58777369-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+  <title>OpenStack_oslo_config | Distributed World</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="OpenStack Oslo – oslo.config 在學習Python的過程中，寫的程式通常是小型的、獨立的、一次性且不牽涉到系統的。但是當我們希望可以寫一個長時間執行的service或是agent。他們是有能力週期性執行任務，並且提供配置文件供使用者客製化設定，甚至可以產生log訊息讓使用者了解程式目前狀況，通常會不知道如何下手。還好我們不必自己摸索，透過Open Source項目我們可以">
+<meta name="keywords" content="OpenStack,Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenStack_oslo_config">
+<meta property="og:url" content="https://chanyilin.github.io/OpenStack-oslo-config.html">
+<meta property="og:site_name" content="Distributed World">
+<meta property="og:description" content="OpenStack Oslo – oslo.config 在學習Python的過程中，寫的程式通常是小型的、獨立的、一次性且不牽涉到系統的。但是當我們希望可以寫一個長時間執行的service或是agent。他們是有能力週期性執行任務，並且提供配置文件供使用者客製化設定，甚至可以產生log訊息讓使用者了解程式目前狀況，通常會不知道如何下手。還好我們不必自己摸索，透過Open Source項目我們可以">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:updated_time" content="2018-11-15T00:49:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OpenStack_oslo_config">
+<meta name="twitter:description" content="OpenStack Oslo – oslo.config 在學習Python的過程中，寫的程式通常是小型的、獨立的、一次性且不牽涉到系統的。但是當我們希望可以寫一個長時間執行的service或是agent。他們是有能力週期性執行任務，並且提供配置文件供使用者客製化設定，甚至可以產生log訊息讓使用者了解程式目前狀況，通常會不知道如何下手。還好我們不必自己摸索，透過Open Source項目我們可以">
+  
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Distributed World</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://chanyilin.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-OpenStack-oslo-config" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/OpenStack-oslo-config.html" class="article-date">
+  <time datetime="2018-11-14T17:37:25.000Z" itemprop="datePublished">2018-11-15</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/OpenStack/">OpenStack</a>►<a class="article-category-link" href="/categories/OpenStack/Python/">Python</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      OpenStack_oslo_config
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="OpenStack-Oslo-–-oslo-config"><a href="#OpenStack-Oslo-–-oslo-config" class="headerlink" title="OpenStack Oslo – oslo.config"></a>OpenStack Oslo – oslo.config</h1><hr>
+<p>在學習Python的過程中，寫的程式通常是小型的、獨立的、一次性且不牽涉到系統的。<br>但是當我們希望可以寫一個長時間執行的service或是agent。他們是有能力週期性執行任務，並且提供配置文件供使用者客製化設定，甚至可以產生log訊息讓使用者了解程式目前狀況，通常會不知道如何下手。<br>還好我們不必自己摸索，透過Open Source項目我們可以看到世界級的系統軟體是如何被實現的，而裡面通常也有我們要的答案。</p>
+<h1 id="什麼是Oslo項目"><a href="#什麼是Oslo項目" class="headerlink" title="什麼是Oslo項目"></a>什麼是Oslo項目</h1><p>在深入了解OpenStack的實作過程中，經常能夠看到程式中import了帶有oslo字樣的模組。<br>是什麼樣的模組可以在OpenStack中每一個服務的實作都會用到呢？<br>這些模組跟Oslo這個項目又有什麼關係？</p>
+<p>我們來看看Oslo這個項目的Mission Statement：</p>
+<blockquote>
+<p>To produce a set of python libraries containing code shared by OpenStack projects. The APIs provided by these libraries should be high quality, stable, consistent, documented and generally applicable.</p>
+</blockquote>
+<p>也就是說，Oslo這個項目的起源是因為來自世界各地開發OpenStack的大神們，也無法忍受開發過程中不斷的重複製造輪子。<br>特別將經常使用的功能寫成一系列的模組，整合起來成為一個OpenStack中各服務都共享的項目，並且講求質量、穩定度、一致性、擁有完整的文件，最後就是可以廣泛使用。<br>而這一系列的模組，有些如<code>oslo_config</code>可以用來處理命令行參數和配置文件，或是如<code>oslo_service</code>提供了一個開發者創建新的long-running services的框架。</p>
+<p>而這也是這一系列文章的目的，我們也許可以透過學習世界級的軟體，來實現心目中想達成的功能，而且最重要的是 — 我們也不用重複製造輪子!</p>
+<h1 id="oslo-config"><a href="#oslo-config" class="headerlink" title="oslo_config"></a>oslo_config</h1><p>通常一個大型的系統，為了滿足使用者在不同情境下的需求，會提供許多可以讓使用者更改的配置選項 (Options)。<br>而這些配置選項值的來源有些是從<strong>命令行參數</strong>、有些是來自於一個包含所有配置選項的<strong>配置文件</strong><br>理所當然程式中便需要一個模組來專門處理數量眾多且來源不同的配置選項。而這任務就是交由oslo_config這個模組負責。<br>根據OpenStack Wiki關於oslo_config的說明，該模組負責以下四個任務</p>
+<ol>
+<li>command line option parsing</li>
+<li>common command line options</li>
+<li>configuration file parsing</li>
+<li>option value lookup</li>
+</ol>
+<p>透過oslo_config這個模組，我們將有能力從命令行中直接設定配置選項或是從設定檔中讀取配置選項的值。<br>以下我們直接透過實作來瞭解如何使用oslo_config。</p>
+<h1 id="環境安裝"><a href="#環境安裝" class="headerlink" title="環境安裝"></a>環境安裝</h1><p>首先，利用virtualenv來創造一個獨立的環境，並安裝oslo_config<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ pip install virtualenv</span><br><span class="line">$ virtualenv example</span><br><span class="line">$ <span class="built_in">cd</span> example</span><br><span class="line">$ <span class="built_in">source</span> bin/activate</span><br><span class="line">$ pip install oslo.config</span><br></pre></td></tr></table></figure></p>
+<h1 id="oslo-config使用"><a href="#oslo-config使用" class="headerlink" title="oslo_config使用"></a>oslo_config使用</h1><p>假設一個使用情境，我們今天希望能夠寫一個程式能夠週期性得執行任務，例如：定期對網頁或另一個服務發送請求。這時我們便希望這個程式可以自由設定以下的配置選項：<br>(1).是否執行週期性任務 (2).週期 (3).目標網址 (4).個人帳號 (5).個人密碼<br>那要如何使用oslo_config來幫我們達到這樣的使用情境呢？</p>
+<h2 id="配置選項定義"><a href="#配置選項定義" class="headerlink" title="配置選項定義"></a>配置選項定義</h2><p>每一個配置選項有其名稱和對應的值。<br>而oslo_config的配置選項支援以下幾種型態：<br><code>strings</code>, <code>integers</code>, <code>floats</code>, <code>booleans</code>, <code>lists</code>, <code>‘multi strings’</code> ,  <code>‘key/value pairs’ (dictionary)</code></p>
+<p>由於配置選項數量龐大，所以勢必要根據他們的性質或是用途來做<strong>分組</strong>，才能讓使用者快速找到他們需要更改的配置選項。<br>我們先將上面五個配置選項分成兩組，分別是periodic_task與request_api，來看oslo_config如何處理。<br>首先我們先創建如下的資目錄結構。<br><em>注： 不在自訂組別內的會被歸類到DEAULT組</em></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">conf</span><br><span class="line">|_  __init__.py</span><br><span class="line">|_  periodic_conf.py //處理 (1)是否執行週期性任務 (2)週期配置</span><br><span class="line">|_  request_conf.py  //處理 (3)目標網址 (4)帳號 (5)密碼</span><br><span class="line">your_app.py</span><br><span class="line">your_app.conf        //配置文件</span><br></pre></td></tr></table></figure>
+<p>接下來先從<code>period_conf.py</code>開始看<br>period_conf.py：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> oslo_config <span class="keyword">import</span> cfg</span><br><span class="line"></span><br><span class="line">opt_periodic_task_group = cfg.OptGroup(name=<span class="string">'periodic_task'</span>,</span><br><span class="line">                                       title=<span class="string">'Periodic Tasks Options'</span>)</span><br><span class="line"></span><br><span class="line">periodic_task_opts = [</span><br><span class="line">    cfg.BoolOpt(<span class="string">'periodic_enable'</span>,</span><br><span class="line">                default=<span class="keyword">True</span>,</span><br><span class="line">                help=<span class="string">'Enable periodic tasks.'</span>),</span><br><span class="line"></span><br><span class="line">    cfg.IntOpt(<span class="string">'periodic_interval'</span>,</span><br><span class="line">                default=<span class="number">60</span>,</span><br><span class="line">                help=<span class="string">'Max interval size between periodic tasks'</span></span><br><span class="line">                     <span class="string">'execution in seconds.'</span>),</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>首先我們需要先從oslo_config中引入cfg模組，<br>並且透過cfg.OptGroup函式來定義一個配置選項組opt_periodic_task_group，<br>同時給予name與title。</p>
+<p>接下來，我們定義兩個配置選項並包在一個名為periodic_task_opts的list中，分別是<br>periodic_enable、periodic_interval。<br>這邊可以看到透過cfg.BoolOpt等函式我們可以設定該配置選項的名稱、預設值、提示…等。<br>其他變數類型也有相對應的函式。</p>
+<h2 id="註冊配置選項"><a href="#註冊配置選項" class="headerlink" title="註冊配置選項"></a>註冊配置選項</h2><p>period_conf.py：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">register_opts</span><span class="params">(conf)</span>:</span></span><br><span class="line">    conf.register_group(opt_periodic_task_group)</span><br><span class="line"></span><br><span class="line">    conf.register_cli_opts(periodic_task_opts,opt_periodic_task_group)</span><br><span class="line">    conf.register_opts(periodic_task_opts, opt_periodic_task_group)</span><br></pre></td></tr></table></figure></p>
+<p>延續上面的程式碼，在<code>period_conf.py</code>中寫一個register_opts的函式，負責將我們的配置選項註冊到conf變數中，這邊可以看到有三種函式：</p>
+<ul>
+<li>register_group: 第一步驟是將group的定義註冊。</li>
+<li>register_cli_opts: 如果希望能夠在命令行設定配置參數，則利用此函式註冊配置選項</li>
+<li>register_opts: 若是希望透過配置文件來設定參數，則利用此函式註冊配置選項。</li>
+</ul>
+<p>最後，我們需要再寫一個<code>__init__.py</code>，目的是讓<code>conf</code>這個資料被做為一個模組，並且在裡面將所有不同組別的配置選項做統一的註冊。<br>下面附上<code>__init__.py</code>、<code>period_conf.py</code>、<code>request_conf.py</code>完整程式碼。</p>
+<p>＿init＿.py<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> oslo_config <span class="keyword">import</span> cfg</span><br><span class="line"><span class="keyword">import</span> period_conf</span><br><span class="line"><span class="keyword">import</span> request_conf</span><br><span class="line"></span><br><span class="line">CONF = cfg.CONF</span><br><span class="line"></span><br><span class="line">period_conf.register_opts(CONF)</span><br><span class="line">request_conf.register_opts(CONF)</span><br></pre></td></tr></table></figure></p>
+<p>period_conf.py：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> oslo_config <span class="keyword">import</span> cfg</span><br><span class="line"></span><br><span class="line">opt_periodic_task_group = cfg.OptGroup(name=<span class="string">'periodic_task'</span>,</span><br><span class="line">                                       title=<span class="string">'Periodic Tasks Options'</span>)</span><br><span class="line">                                       </span><br><span class="line">periodic_task_opts = [</span><br><span class="line">    cfg.BoolOpt(<span class="string">'periodic_enable'</span>,</span><br><span class="line">                default=<span class="keyword">True</span>,</span><br><span class="line">                help=<span class="string">'Enable periodic tasks.'</span>),</span><br><span class="line"></span><br><span class="line">    cfg.IntOpt(<span class="string">'periodic_interval'</span>,</span><br><span class="line">                default=<span class="number">60</span>,</span><br><span class="line">                help=<span class="string">'Max interval size between periodic tasks'</span></span><br><span class="line">                     <span class="string">'execution in seconds.'</span>),</span><br><span class="line">]</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">register_opts</span><span class="params">(conf)</span>:</span></span><br><span class="line">    conf.register_group(opt_periodic_task_group)</span><br><span class="line"></span><br><span class="line">    conf.register_cli_opts(periodic_task_opts,opt_periodic_task_group)</span><br><span class="line">    conf.register_opts(periodic_task_opts, opt_periodic_task_group)</span><br></pre></td></tr></table></figure></p>
+<p>request_conf.py：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> oslo_config <span class="keyword">import</span> cfg</span><br><span class="line"></span><br><span class="line">opt_request_api_group = cfg.OptGroup(name=<span class="string">'request_api'</span>,</span><br><span class="line">                                     title=<span class="string">'Request Api Options'</span>)</span><br><span class="line">                                     </span><br><span class="line">request_api_opts = [</span><br><span class="line">    cfg.StrOpt(<span class="string">'host'</span>,</span><br><span class="line">               default=<span class="string">'localhost'</span>,</span><br><span class="line">               help=<span class="string">'IP/hostname'</span>),</span><br><span class="line"></span><br><span class="line">    cfg.ListOpt(<span class="string">'username'</span>,</span><br><span class="line">                default=<span class="keyword">None</span>,</span><br><span class="line">                help=<span class="string">'A list of usernames'</span>),</span><br><span class="line"></span><br><span class="line">    cfg.DictOpt(<span class="string">'password'</span>,</span><br><span class="line">                default=<span class="keyword">None</span>,</span><br><span class="line">                help=<span class="string">'password for each usernames'</span>)</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">register_opts</span><span class="params">(conf)</span>:</span></span><br><span class="line">    conf.register_group(opt_request_api_group)</span><br><span class="line">    conf.register_opts(request_api_opts, opt_request_api_group</span><br></pre></td></tr></table></figure></p>
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><p>現在讓我們看一下配置文件內部的格式<br>your_app.conf:<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[request_api]</span><br><span class="line">host = localhost                    //strings</span><br><span class="line">username = Jack, John               //lists</span><br><span class="line">password = Jack: XXXX, John: YYYY   //dictionary</span><br><span class="line"></span><br><span class="line">[periodic_task]</span><br><span class="line">periodic_enable = False             //booleans</span><br><span class="line">periodic_interval = 20              //integers</span><br></pre></td></tr></table></figure></p>
+<p>還記得我們剛剛在宣告組別的時候給了name嗎?<br>當時定義的name在配置文件中就是用來表示不同的group。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>終於來到最後在我們自己的程式中取用這些配置的參數。<br>your_app.py:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> conf  //將我們的conf資料夾作為模組<span class="keyword">import</span></span><br><span class="line"><span class="keyword">import</span> sys   </span><br><span class="line"></span><br><span class="line">CONF = conf.CONF</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    CONF(sys.argv[<span class="number">1</span>:], project=<span class="string">'your_app'</span>)</span><br><span class="line"></span><br><span class="line">    print( CONF.request_api.host )</span><br><span class="line">    print( CONF.request_api.username[<span class="number">0</span>])</span><br><span class="line">    print( CONF.request_api.password[<span class="string">'Jack'</span>] )</span><br><span class="line"></span><br><span class="line">    print( CONF.periodic_task.periodic_enable )</span><br><span class="line">    print( CONF.periodic_task.periodic_interval )</span><br></pre></td></tr></table></figure></p>
+<p>首先這邊有幾個重點：</p>
+<ol>
+<li><p>可以看到CONF以全域變數的角色存在，這點在OpenStack community是一個爭執很久的議題。有興趣的可以至下面連結看開發者們的結論。<br><a href="https://wiki.openstack.org/wiki/Oslo#Why_does_oslo.config_have_a_CONF_object.3F_Global_object_SUCK.21" target="_blank" rel="noopener">Why does oslo.config have a CONF object? Global object SUCK!</a></p>
+</li>
+<li><p>CONF透過命令行參數來找到配置文件位置，那第一行為什麼需要<code>project=&#39;your_app&#39;</code>呢？<br>這是因為在oslo_config設計中，如果沒有指定參數的話，預設會到<code>/etc/project</code>來尋找配置文件。以這邊的例子來說就會至<code>/etc/your_app/</code>底下尋找。</p>
+</li>
+</ol>
+<p>最後執行<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ python your_app.py --config-file your_app.conf</span><br></pre></td></tr></table></figure></p>
+<p>即可看到你在配置文件中配置的參數。</p>
+<p>等等，那如果我希望能夠從命令行來指定配置參數的話該如何做呢？<br>首先我們可以透過<code>-h</code>來看命令行參數可以設定哪些配置，以及每個參數的說明。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">$ python your_app.py -h</span><br><span class="line"></span><br><span class="line">usage: your_app [-h] [--config-dir DIR] [--config-file PATH]</span><br><span class="line">                [--periodic_task-noperiodic_enable]</span><br><span class="line">                [--periodic_task-periodic_enable]</span><br><span class="line">                [--periodic_task-periodic_interval PERIODIC_TASK_PERIODIC_INTERVAL]</span><br><span class="line"></span><br><span class="line">optional arguments:</span><br><span class="line">  -h, --<span class="built_in">help</span>            show this <span class="built_in">help</span> message and <span class="built_in">exit</span></span><br><span class="line">  --config-dir DIR      Path to a config directory to pull *.conf files from.</span><br><span class="line">                        This file <span class="built_in">set</span> is sorted, so as to provide a</span><br><span class="line">                        predictable parse order <span class="keyword">if</span> individual options are</span><br><span class="line">                        over-ridden. The <span class="built_in">set</span> is parsed after the file(s)</span><br><span class="line">                        specified via previous --config-file, arguments hence</span><br><span class="line">                        over-ridden options <span class="keyword">in</span> the directory take precedence.</span><br><span class="line">  --config-file PATH    Path to a config file to use. Multiple config files</span><br><span class="line">                        can be specified, with values <span class="keyword">in</span> later files taking</span><br><span class="line">                        precedence. Defaults to None.</span><br><span class="line"></span><br><span class="line">Periodic Tasks Options:</span><br><span class="line">  --periodic_task-noperiodic_enable</span><br><span class="line">                        The inverse of --periodic_enable</span><br><span class="line">  --periodic_task-periodic_enable</span><br><span class="line">                        Enable periodic tasks.</span><br><span class="line">  --periodic_task-periodic_interval PERIODIC_TASK_PERIODIC_INTERVAL</span><br><span class="line">                        Max interval size between periodic tasks execution <span class="keyword">in</span></span><br><span class="line">                        seconds.</span><br></pre></td></tr></table></figure>
+<p>這時在透過以下指令，即可在命令行中指定配置參數。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ python your_app.py --config-file your_app.conf --periodic_task-periodic_interval 1000</span><br></pre></td></tr></table></figure>
+<p>以上，即是最簡單但也是最核心的<code>Oslo_config</code>使用方法。</p>
+<h1 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h1><p>1.<a href="https://wiki.openstack.org/wiki/Oslo" target="_blank" rel="noopener">https://wiki.openstack.org/wiki/Oslo</a> Oslo WiKi<br>2.<a href="https://wiki.openstack.org/wiki/Oslo/Config" target="_blank" rel="noopener">https://wiki.openstack.org/wiki/Oslo/Config</a> Oslo.config WiKi<br>3.<a href="https://github.com/openstack/magnum" target="_blank" rel="noopener">https://github.com/openstack/magnum</a> OpenStack Magnum Source code<br>4.<a href="http://www.choudan.net/2013/11/27/OpenStack-Oslo.config-%E5%AD%A6%E4%B9%A0(%E4%B8%80).html" target="_blank" rel="noopener">http://www.choudan.net/2013/11/27/OpenStack-Oslo.config-%E5%AD%A6%E4%B9%A0(%E4%B8%80).html</a><br>5.<a href="http://gtcsq.readthedocs.io/en/latest/openstack/oslo_cfg.html" target="_blank" rel="noopener">http://gtcsq.readthedocs.io/en/latest/openstack/oslo_cfg.html</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://chanyilin.github.io/OpenStack-oslo-config.html" data-id="ck41d071p0006zv4pgphxx0d2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenStack/">OpenStack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/">Python</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/argo.html" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Argo
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Jack Lin<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
