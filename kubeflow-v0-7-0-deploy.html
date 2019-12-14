@@ -74,7 +74,7 @@
 <meta property="og:image" content="https://i.imgur.com/e7UWqaz.png">
 <meta property="og:image" content="https://i.imgur.com/sWTHQRj.png">
 <meta property="og:image" content="https://i.imgur.com/8DZ3RFy.png">
-<meta property="og:updated_time" content="2019-12-14T02:51:09.400Z">
+<meta property="og:updated_time" content="2019-12-14T03:01:15.581Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubeflow v0.7 - Multi-user, auth-enabled 部署與安裝">
 <meta name="twitter:description" content="Kubeflow是一個開源軟體，致力於提供使用者於Kubernetes上快速便捷的部署與管理ML Workflow，而在0.7版最重要的功能即是搭配`Istio`加入的使用者認證與權限管理。此功能讓一個Kubeflow的可以讓多人使用，並透過Group的概念在多個使用者間共享資源與權限，旨在成為一個通用全方位的AI平台。">
@@ -281,7 +281,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-12-14 10:51:09" itemprop="dateModified" datetime="2019-12-14T10:51:09+08:00">2019-12-14</time>
+                <time title="Modified: 2019-12-14 11:01:15" itemprop="dateModified" datetime="2019-12-14T11:01:15+08:00">2019-12-14</time>
               </span>
             
           
@@ -397,6 +397,7 @@
 <p>作為Kubeflow Member，也聊一下關於Kubeflow的未來規劃。目前基本的功能都可以說穩定且完整了，未來將朝向critical user journeys的完善，例如如何讓notebook開發模型到送上pipeline進行訓練的流程更為簡單。相關影片可以參考: <a href="https://www.youtube.com/watch?v=C9rJzTzVzvQ" target="_blank" rel="noopener">https://www.youtube.com/watch?v=C9rJzTzVzvQ</a></p>
 <p>另外，本人此次參與2019 KubeConNA也發現導入Kubeflow的公司越來越多了，除了直接使用外，也有許多團隊嘗試將Kubeflow結合內部的系統已滿組內部使用需求，例如: Uber、Spotify與Lyft等都有相關的演講可以參考。</p>
 <p>因為Kubeflow實作<strong>使用者認證</strong>的方式是搭配<code>Istio</code>實作，算是一個通用且蠻有參考價值的做法，接下來兩篇將會詳解整個實作，提供大家一個在Kubernetes上實作多使用者隔離的方法。</p>
+<h2 id="連結"><a href="#連結" class="headerlink" title="連結"></a>連結</h2><p><a href="https://chanyilin.github.io/kubeflow-istio-authnz.html">Kubeflow如何搭配Istio實作Multi-user認證與權限管理(上)</a><br><a href="https://chanyilin.github.io/kubeflow-istio-authnz-2.html">Kubeflow如何搭配Istio實作Multi-user認證與權限管理(下)</a></p>
 
     </div>
 
@@ -492,7 +493,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#介紹"><span class="nav-number">1.</span> <span class="nav-text">介紹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#環境準備"><span class="nav-number">2.</span> <span class="nav-text">環境準備</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下載安裝檔案"><span class="nav-number">2.1.</span> <span class="nav-text">下載安裝檔案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署-Kubeflow"><span class="nav-number">3.</span> <span class="nav-text">部署 Kubeflow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Kubeflow"><span class="nav-number">4.</span> <span class="nav-text">使用Kubeflow</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用預設帳號密碼登入"><span class="nav-number">4.1.</span> <span class="nav-text">使用預設帳號密碼登入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多使用者情境"><span class="nav-number">5.</span> <span class="nav-text">多使用者情境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#增加一個新使用者"><span class="nav-number">5.1.</span> <span class="nav-text">增加一個新使用者</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多使用者隔離"><span class="nav-number">5.2.</span> <span class="nav-text">多使用者隔離</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#kubernetes-資源隔離"><span class="nav-number">5.2.1.</span> <span class="nav-text">kubernetes 資源隔離</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#kubernetes服務隔離"><span class="nav-number">5.2.2.</span> <span class="nav-text">kubernetes服務隔離</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#共享資源"><span class="nav-number">5.2.3.</span> <span class="nav-text">共享資源</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小結"><span class="nav-number">6.</span> <span class="nav-text">小結</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#介紹"><span class="nav-number">1.</span> <span class="nav-text">介紹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#環境準備"><span class="nav-number">2.</span> <span class="nav-text">環境準備</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下載安裝檔案"><span class="nav-number">2.1.</span> <span class="nav-text">下載安裝檔案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署-Kubeflow"><span class="nav-number">3.</span> <span class="nav-text">部署 Kubeflow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Kubeflow"><span class="nav-number">4.</span> <span class="nav-text">使用Kubeflow</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用預設帳號密碼登入"><span class="nav-number">4.1.</span> <span class="nav-text">使用預設帳號密碼登入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多使用者情境"><span class="nav-number">5.</span> <span class="nav-text">多使用者情境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#增加一個新使用者"><span class="nav-number">5.1.</span> <span class="nav-text">增加一個新使用者</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多使用者隔離"><span class="nav-number">5.2.</span> <span class="nav-text">多使用者隔離</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#kubernetes-資源隔離"><span class="nav-number">5.2.1.</span> <span class="nav-text">kubernetes 資源隔離</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#kubernetes服務隔離"><span class="nav-number">5.2.2.</span> <span class="nav-text">kubernetes服務隔離</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#共享資源"><span class="nav-number">5.2.3.</span> <span class="nav-text">共享資源</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小結"><span class="nav-number">6.</span> <span class="nav-text">小結</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#連結"><span class="nav-number">7.</span> <span class="nav-text">連結</span></a></li></ol></div>
         
       </div>
       <!--/noindex-->
