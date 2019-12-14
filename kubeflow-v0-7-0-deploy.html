@@ -74,7 +74,7 @@
 <meta property="og:image" content="https://i.imgur.com/e7UWqaz.png">
 <meta property="og:image" content="https://i.imgur.com/sWTHQRj.png">
 <meta property="og:image" content="https://i.imgur.com/8DZ3RFy.png">
-<meta property="og:updated_time" content="2019-11-27T04:57:46.730Z">
+<meta property="og:updated_time" content="2019-12-14T02:51:09.400Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubeflow v0.7 - Multi-user, auth-enabled 部署與安裝">
 <meta name="twitter:description" content="Kubeflow是一個開源軟體，致力於提供使用者於Kubernetes上快速便捷的部署與管理ML Workflow，而在0.7版最重要的功能即是搭配`Istio`加入的使用者認證與權限管理。此功能讓一個Kubeflow的可以讓多人使用，並透過Group的概念在多個使用者間共享資源與權限，旨在成為一個通用全方位的AI平台。">
@@ -270,11 +270,19 @@
                 
               
 
-              <time title="Created: 2019-11-27 10:28:12 / Modified: 12:57:46" itemprop="dateCreated datePublished" datetime="2019-11-27T10:28:12+08:00">2019-11-27</time>
+              <time title="Created: 2019-11-27 10:28:12" itemprop="dateCreated datePublished" datetime="2019-11-27T10:28:12+08:00">2019-11-27</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-12-14 10:51:09" itemprop="dateModified" datetime="2019-12-14T10:51:09+08:00">2019-12-14</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -351,7 +359,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 透過localhost:8080連上</span><br><span class="line">kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80</span><br></pre></td></tr></table></figure>
 <p>接著會出現以下畫面<br><img src="https://i.imgur.com/l9alQ3f.png" alt=""></p>
 <p>使用帳號密碼 <a href="mailto:`admin@kubeflow.org" target="_blank" rel="noopener">`admin@kubeflow.org</a>:12341234`即可登入。</p>
-<p>接著會出現下面兩個對話筐，都直接確認即可。第一次登入即會幫該使用者也就是<a href="mailto:`admin@kubeflow.org" target="_blank" rel="noopener">`admin@kubeflow.org</a><code>創建他專屬的namespace</code>admin`<br><img src="https://i.imgur.com/IdhMthD.png" alt=""></p>
+<p>接著會出現下面兩個對話筐，都直接確認即可。第一次登入即會幫該使用者也就是 <a href="mailto:`admin@kubeflow.org" target="_blank" rel="noopener">`admin@kubeflow.org</a><code>創建他專屬的namespace</code>admin`<br><img src="https://i.imgur.com/IdhMthD.png" alt=""></p>
 <p>至此Kubeflow即部署完成，可以從<code>Dashboard</code>使用各種服務包含<code>Jupyter Notebook</code>與<code>Pipeline</code>。<br><img src="https://i.imgur.com/W6kbALk.png" alt=""></p>
 <h2 id="多使用者情境"><a href="#多使用者情境" class="headerlink" title="多使用者情境"></a>多使用者情境</h2><p>首先直接看Kubeflow官方的多使用者情境示意圖。</p>
 <p><img src="https://i.imgur.com/RKJaYRn.png" alt=""></p>
