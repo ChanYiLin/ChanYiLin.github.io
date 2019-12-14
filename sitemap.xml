@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://chanyilin.github.io/OpenStack-oslo-config.html</loc>
+    
+    <lastmod>2019-12-14T02:49:03.055Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://chanyilin.github.io/argo.html</loc>
+    
+    <lastmod>2019-12-14T02:47:57.608Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://chanyilin.github.io/kubeflow-istio-authnz.html</loc>
     
     <lastmod>2019-12-07T16:26:25.144Z</lastmod>
@@ -23,13 +37,6 @@
   </url>
   
   <url>
-    <loc>https://chanyilin.github.io/argo.html</loc>
-    
-    <lastmod>2019-11-27T04:12:10.484Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://chanyilin.github.io/about/index.html</loc>
     
     <lastmod>2019-11-27T02:30:52.488Z</lastmod>
@@ -47,13 +54,6 @@
     <loc>https://chanyilin.github.io/tags/index.html</loc>
     
     <lastmod>2018-11-15T00:51:32.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://chanyilin.github.io/OpenStack-oslo-config.html</loc>
-    
-    <lastmod>2018-11-15T00:49:10.000Z</lastmod>
     
   </url>
   

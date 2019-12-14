@@ -55,21 +55,21 @@
   };
 </script>
 
-  <meta name="description" content="Kubeflow 作為一個 Deep Learning service on Kubernetes 的專案，自然面對最大的問題就是如何將一個 DL 中的每一個 phase 串在一起。而眾多 workflow 工具中， Kubeflow 在這邊選擇使用的便是 - Argo。 Kubeflow 不只將 Argo 應用在 pipeline，也應用在它內部的CI/CD上，因此值得我們好好關注。 Argo">
-<meta name="keywords" content="Kubeflow,Kubernetes,Workflow,argo">
+  <meta name="description" content="Argo 是一個基於 CRD 實作的一個 Workflow 工具，協助使用者管理與控制一系列任務的執行，同時提供一個簡潔的UI介面觀看每一個任務的執行狀況、順序、結果與 log。">
+<meta name="keywords" content="Kubeflow,部署,安裝,Kubernetes,argo,Argo">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Argo">
 <meta property="og:url" content="https://chanyilin.github.io/argo.html">
 <meta property="og:site_name" content="Jack&#39;s Blog">
-<meta property="og:description" content="Kubeflow 作為一個 Deep Learning service on Kubernetes 的專案，自然面對最大的問題就是如何將一個 DL 中的每一個 phase 串在一起。而眾多 workflow 工具中， Kubeflow 在這邊選擇使用的便是 - Argo。 Kubeflow 不只將 Argo 應用在 pipeline，也應用在它內部的CI/CD上，因此值得我們好好關注。 Argo">
+<meta property="og:description" content="Argo 是一個基於 CRD 實作的一個 Workflow 工具，協助使用者管理與控制一系列任務的執行，同時提供一個簡潔的UI介面觀看每一個任務的執行狀況、順序、結果與 log。">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://chanyilin.github.io/images/argo.png">
 <meta property="og:image" content="https://chanyilin.github.io/images/argo-ui.png">
 <meta property="og:image" content="https://chanyilin.github.io/images/dag-steps-cmp.png">
-<meta property="og:updated_time" content="2019-11-27T04:12:10.484Z">
+<meta property="og:updated_time" content="2019-12-14T02:47:57.608Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Argo">
-<meta name="twitter:description" content="Kubeflow 作為一個 Deep Learning service on Kubernetes 的專案，自然面對最大的問題就是如何將一個 DL 中的每一個 phase 串在一起。而眾多 workflow 工具中， Kubeflow 在這邊選擇使用的便是 - Argo。 Kubeflow 不只將 Argo 應用在 pipeline，也應用在它內部的CI/CD上，因此值得我們好好關注。 Argo">
+<meta name="twitter:description" content="Argo 是一個基於 CRD 實作的一個 Workflow 工具，協助使用者管理與控制一系列任務的執行，同時提供一個簡潔的UI介面觀看每一個任務的執行狀況、順序、結果與 log。">
 <meta name="twitter:image" content="https://chanyilin.github.io/images/argo.png">
   <link rel="canonical" href="https://chanyilin.github.io/argo">
 
@@ -273,7 +273,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-11-27 12:12:10" itemprop="dateModified" datetime="2019-11-27T12:12:10+08:00">2019-11-27</time>
+                <time title="Modified: 2019-12-14 10:47:57" itemprop="dateModified" datetime="2019-12-14T10:47:57+08:00">2019-12-14</time>
               </span>
             
           
@@ -297,7 +297,7 @@
                   , 
                 
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Kubeflow/Kubernetes/Workflow/" itemprop="url" rel="index"><span itemprop="name">Workflow</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Kubeflow/Kubernetes/Pipeline/" itemprop="url" rel="index"><span itemprop="name">Pipeline</span></a></span>
 
                 
                 
@@ -320,6 +320,8 @@
   </span>
   
   
+            <div class="post-description">Argo 是一個基於 CRD 實作的一個 Workflow 工具，協助使用者管理與控制一系列任務的執行，同時提供一個簡潔的UI介面觀看每一個任務的執行狀況、順序、結果與 log。</div>
+          
 
         </div>
       </header>
@@ -544,6 +546,8 @@
           
         
         
+        
+          
         
           
         

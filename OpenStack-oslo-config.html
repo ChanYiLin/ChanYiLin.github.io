@@ -55,18 +55,18 @@
   };
 </script>
 
-  <meta name="description" content="OpenStack Oslo – oslo.config 在學習Python的過程中，寫的程式通常是小型的、獨立的、一次性且不牽涉到系統的。但是當我們希望可以寫一個長時間執行的service或是agent。他們是有能力週期性執行任務，並且提供配置文件供使用者客製化設定，甚至可以產生log訊息讓使用者了解程式目前狀況，通常會不知道如何下手。還好我們不必自己摸索，透過Open Source項目我們可以">
-<meta name="keywords" content="OpenStack,Python">
+  <meta name="description" content="通常一個大型的系統，為了滿足使用者在不同情境下的需求，會提供許多可以讓使用者更改的配置選項 (Options)。而這些配置選項值的來源有些是從命令行參數、有些是來自於一個包含所有配置選項的配置文件。">
+<meta name="keywords" content="Openstack,Python">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OpenStack_oslo_config">
 <meta property="og:url" content="https://chanyilin.github.io/OpenStack-oslo-config.html">
 <meta property="og:site_name" content="Jack&#39;s Blog">
-<meta property="og:description" content="OpenStack Oslo – oslo.config 在學習Python的過程中，寫的程式通常是小型的、獨立的、一次性且不牽涉到系統的。但是當我們希望可以寫一個長時間執行的service或是agent。他們是有能力週期性執行任務，並且提供配置文件供使用者客製化設定，甚至可以產生log訊息讓使用者了解程式目前狀況，通常會不知道如何下手。還好我們不必自己摸索，透過Open Source項目我們可以">
+<meta property="og:description" content="通常一個大型的系統，為了滿足使用者在不同情境下的需求，會提供許多可以讓使用者更改的配置選項 (Options)。而這些配置選項值的來源有些是從命令行參數、有些是來自於一個包含所有配置選項的配置文件。">
 <meta property="og:locale" content="zh-tw">
-<meta property="og:updated_time" content="2018-11-15T00:49:10.000Z">
+<meta property="og:updated_time" content="2019-12-14T02:49:03.055Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OpenStack_oslo_config">
-<meta name="twitter:description" content="OpenStack Oslo – oslo.config 在學習Python的過程中，寫的程式通常是小型的、獨立的、一次性且不牽涉到系統的。但是當我們希望可以寫一個長時間執行的service或是agent。他們是有能力週期性執行任務，並且提供配置文件供使用者客製化設定，甚至可以產生log訊息讓使用者了解程式目前狀況，通常會不知道如何下手。還好我們不必自己摸索，透過Open Source項目我們可以">
+<meta name="twitter:description" content="通常一個大型的系統，為了滿足使用者在不同情境下的需求，會提供許多可以讓使用者更改的配置選項 (Options)。而這些配置選項值的來源有些是從命令行參數、有些是來自於一個包含所有配置選項的配置文件。">
   <link rel="canonical" href="https://chanyilin.github.io/OpenStack-oslo-config">
 
 
@@ -258,11 +258,19 @@
                 
               
 
-              <time title="Created: 2018-11-15 01:37:25 / Modified: 08:49:10" itemprop="dateCreated datePublished" datetime="2018-11-15T01:37:25+08:00">2018-11-15</time>
+              <time title="Created: 2018-11-15 01:37:25" itemprop="dateCreated datePublished" datetime="2018-11-15T01:37:25+08:00">2018-11-15</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-12-14 10:49:03" itemprop="dateModified" datetime="2019-12-14T10:49:03+08:00">2019-12-14</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -301,6 +309,8 @@
   </span>
   
   
+            <div class="post-description">通常一個大型的系統，為了滿足使用者在不同情境下的需求，會提供許多可以讓使用者更改的配置選項 (Options)。而這些配置選項值的來源有些是從命令行參數、有些是來自於一個包含所有配置選項的配置文件。</div>
+          
 
         </div>
       </header>
@@ -488,6 +498,8 @@
           
         
         
+        
+          
         
           
         
