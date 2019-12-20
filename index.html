@@ -394,7 +394,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-12-18 12:53:34" itemprop="dateModified" datetime="2019-12-18T12:53:34+08:00">2019-12-18</time>
+                <time title="Modified: 2019-12-20 15:41:41" itemprop="dateModified" datetime="2019-12-20T15:41:41+08:00">2019-12-20</time>
               </span>
             
           
@@ -444,7 +444,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          昨天提到了透過Kubernetes RBAC與Istio ServiceRole/ServiceRoleBinding來做服務與資源的權限認證，以達成Multi-user情境。今天來說說如何進行認證，以及這個獨立的`AuthService`是什麼。
+          Kubeflow，昨天提到了透過Kubernetes RBAC與Istio ServiceRole/ServiceRoleBinding來做服務與資源的權限認證，以達成Multi-user情境。今天來說說如何進行認證，以及這個獨立的`AuthService`是什麼。
           <!--noindex-->
           
             <div class="post-button text-center">
@@ -517,7 +517,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-12-18 12:53:38" itemprop="dateModified" datetime="2019-12-18T12:53:38+08:00">2019-12-18</time>
+                <time title="Modified: 2019-12-20 15:41:54" itemprop="dateModified" datetime="2019-12-20T15:41:54+08:00">2019-12-20</time>
               </span>
             
           
@@ -567,7 +567,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          昨天提到了透過Kubernetes RBAC與Istio ServiceRole/ServiceRoleBinding來做服務與資源的權限認證，以達成Multi-user情境。今天來說說如何進行認證，以及這個獨立的`AuthService`是什麼。
+          既前一篇分享如何安裝Kubeflow v0.7 Multi-User 版本後，接下來將會詳解其實做原理，因為他的做法非常K8s Native值得大家參考！原本的Kubeflow各項服務都是獨立的專案，使用方式是分別的操作Jupyter UI來開啟Jupyterhub，或是使用Kubeflow Pipeline UI來創建一個Workflow。這使得整體的使用有些破碎，Kubeflow在接下來的發展將會搭配一個統一的Dashboard UI與認證方案來解決，以下是過去的缺點與將帶來的好處。
           <!--noindex-->
           
             <div class="post-button text-center">

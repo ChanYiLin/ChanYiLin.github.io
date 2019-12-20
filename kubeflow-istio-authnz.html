@@ -56,22 +56,22 @@
   };
 </script>
 
-  <meta name="description" content="昨天提到了透過Kubernetes RBAC與Istio ServiceRole/ServiceRoleBinding來做服務與資源的權限認證，以達成Multi-user情境。今天來說說如何進行認證，以及這個獨立的`AuthService`是什麼。">
-<meta name="keywords" content="Kubeflow,部署,Multi User,Istio,認證,rbac">
+  <meta name="description" content="既前一篇分享如何安裝Kubeflow v0.7 Multi-User 版本後，接下來將會詳解其實做原理，因為他的做法非常K8s Native值得大家參考！原本的Kubeflow各項服務都是獨立的專案，使用方式是分別的操作Jupyter UI來開啟Jupyterhub，或是使用Kubeflow Pipeline UI來創建一個Workflow。這使得整體的使用有些破碎，Kubeflow在接下來的發展">
+<meta name="keywords" content="Kubeflow,Istio,Multi User,Kubeflow Istio,認證,rbac">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kubeflow如何搭配Istio實作Multi-user認證與權限管理(上)">
 <meta property="og:url" content="https://chanyilin.github.io/kubeflow-istio-authnz.html">
 <meta property="og:site_name" content="Jack&#39;s Blog">
-<meta property="og:description" content="昨天提到了透過Kubernetes RBAC與Istio ServiceRole/ServiceRoleBinding來做服務與資源的權限認證，以達成Multi-user情境。今天來說說如何進行認證，以及這個獨立的`AuthService`是什麼。">
+<meta property="og:description" content="既前一篇分享如何安裝Kubeflow v0.7 Multi-User 版本後，接下來將會詳解其實做原理，因為他的做法非常K8s Native值得大家參考！原本的Kubeflow各項服務都是獨立的專案，使用方式是分別的操作Jupyter UI來開啟Jupyterhub，或是使用Kubeflow Pipeline UI來創建一個Workflow。這使得整體的使用有些破碎，Kubeflow在接下來的發展">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://i.imgur.com/6kTYwIR.png">
 <meta property="og:image" content="https://i.imgur.com/RKJaYRn.png">
 <meta property="og:image" content="https://i.imgur.com/pJB7e0T.png">
 <meta property="og:image" content="https://i.imgur.com/RKJaYRn.png">
-<meta property="og:updated_time" content="2019-12-18T04:53:38.311Z">
+<meta property="og:updated_time" content="2019-12-20T07:41:54.028Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubeflow如何搭配Istio實作Multi-user認證與權限管理(上)">
-<meta name="twitter:description" content="昨天提到了透過Kubernetes RBAC與Istio ServiceRole/ServiceRoleBinding來做服務與資源的權限認證，以達成Multi-user情境。今天來說說如何進行認證，以及這個獨立的`AuthService`是什麼。">
+<meta name="twitter:description" content="既前一篇分享如何安裝Kubeflow v0.7 Multi-User 版本後，接下來將會詳解其實做原理，因為他的做法非常K8s Native值得大家參考！原本的Kubeflow各項服務都是獨立的專案，使用方式是分別的操作Jupyter UI來開啟Jupyterhub，或是使用Kubeflow Pipeline UI來創建一個Workflow。這使得整體的使用有些破碎，Kubeflow在接下來的發展">
 <meta name="twitter:image" content="https://i.imgur.com/6kTYwIR.png">
   <link rel="canonical" href="https://chanyilin.github.io/kubeflow-istio-authnz">
 
@@ -277,7 +277,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-12-18 12:53:38" itemprop="dateModified" datetime="2019-12-18T12:53:38+08:00">2019-12-18</time>
+                <time title="Modified: 2019-12-20 15:41:54" itemprop="dateModified" datetime="2019-12-20T15:41:54+08:00">2019-12-20</time>
               </span>
             
           
@@ -317,7 +317,7 @@
   </span>
   
   
-            <div class="post-description">昨天提到了透過Kubernetes RBAC與Istio ServiceRole/ServiceRoleBinding來做服務與資源的權限認證，以達成Multi-user情境。今天來說說如何進行認證，以及這個獨立的`AuthService`是什麼。</div>
+            <div class="post-description">既前一篇分享如何安裝Kubeflow v0.7 Multi-User 版本後，接下來將會詳解其實做原理，因為他的做法非常K8s Native值得大家參考！原本的Kubeflow各項服務都是獨立的專案，使用方式是分別的操作Jupyter UI來開啟Jupyterhub，或是使用Kubeflow Pipeline UI來創建一個Workflow。這使得整體的使用有些破碎，Kubeflow在接下來的發展將會搭配一個統一的Dashboard UI與認證方案來解決，以下是過去的缺點與將帶來的好處。</div>
           
 
         </div>
@@ -330,7 +330,7 @@
 
       
         <p><img src="https://i.imgur.com/6kTYwIR.png" alt=""></p>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>既前一篇分享如何安裝Kubeflow v0.7 Multi-User 版本後，接下來將會詳解其實做原理，因為他的做法非常K8s Native值得大家參考！</p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>既前一篇在 Kubeflow 部署 中分享如何安裝Kubeflow v0.7 Multi-User 版本後，接下來將會詳解其實做原理，因為他的做法非常K8s Native值得大家參考！</p>
 <p>原本的Kubeflow各項服務都是獨立的專案，使用方式是分別的操作<code>Jupyter UI</code>來開啟Jupyterhub，或是使用<code>Kubeflow Pipeline UI</code>來創建一個Workflow。這使得整體的使用有些破碎，Kubeflow在接下來的發展將會搭配一個統一的<code>Dashboard UI</code>與認證方案來解決，以下是過去的缺點與將帶來的好處。</p>
 <ul>
 <li>過去使用者必須對K8s有一定程度的瞭解，甚至在使用Kubeflow服務時，必須用<code>kubectl</code>來操作K8s資源，這提高了Data Scientists使用的門檻。<ul>
