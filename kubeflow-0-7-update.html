@@ -59,15 +59,15 @@
   <meta name="description" content="Kubeflow是一個開源軟體，致力於提供使用者於Kubernetes上快速便捷的部署與管理ML Workflow。Kubeflow在2019年11月推出0.7版，除了許多服務相繼邁入Beta外，也同時發佈了新的服務-KFServing。至此，Kubeflow完整了他的使用情境，讓使用者可以在此平台上完成模型建構、訓練到最後的部署。">
 <meta name="keywords" content="kubeflow,istio,kubeflow 0.7,教學,功能">
 <meta property="og:type" content="article">
-<meta property="og:title" content="kubeflow-0.7-update">
+<meta property="og:title" content="Kubeflow v0.7 新功能與回顧">
 <meta property="og:url" content="https://chanyilin.github.io/kubeflow-0-7-update.html">
 <meta property="og:site_name" content="Jack&#39;s Blog">
 <meta property="og:description" content="Kubeflow是一個開源軟體，致力於提供使用者於Kubernetes上快速便捷的部署與管理ML Workflow。Kubeflow在2019年11月推出0.7版，除了許多服務相繼邁入Beta外，也同時發佈了新的服務-KFServing。至此，Kubeflow完整了他的使用情境，讓使用者可以在此平台上完成模型建構、訓練到最後的部署。">
 <meta property="og:locale" content="zh-tw">
 <meta property="og:image" content="https://miro.medium.com/max/3200/0*TGNBehHc1-SNvv59">
-<meta property="og:updated_time" content="2019-12-22T16:21:12.643Z">
+<meta property="og:updated_time" content="2019-12-22T16:22:49.409Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="kubeflow-0.7-update">
+<meta name="twitter:title" content="Kubeflow v0.7 新功能與回顧">
 <meta name="twitter:description" content="Kubeflow是一個開源軟體，致力於提供使用者於Kubernetes上快速便捷的部署與管理ML Workflow。Kubeflow在2019年11月推出0.7版，除了許多服務相繼邁入Beta外，也同時發佈了新的服務-KFServing。至此，Kubeflow完整了他的使用情境，讓使用者可以在此平台上完成模型建構、訓練到最後的部署。">
 <meta name="twitter:image" content="https://miro.medium.com/max/3200/0*TGNBehHc1-SNvv59">
   <link rel="canonical" href="https://chanyilin.github.io/kubeflow-0-7-update">
@@ -84,7 +84,7 @@
   };
 </script>
 
-  <title>kubeflow-0.7-update | Jack's Blog</title>
+  <title>Kubeflow v0.7 新功能與回顧 | Jack's Blog</title>
   <meta name="generator" content="Hexo 3.8.0">
   
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-58777369-2"></script>
@@ -257,7 +257,7 @@
       <meta itemprop="name" content="Jack's Blog">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">kubeflow-0.7-update
+        <h1 class="post-title" itemprop="name headline">Kubeflow v0.7 新功能與回顧
 
           
         </h1>
@@ -273,7 +273,7 @@
                 
               
 
-              <time title="Created: 2019-12-23 00:19:32 / Modified: 00:21:12" itemprop="dateCreated datePublished" datetime="2019-12-23T00:19:32+08:00">2019-12-23</time>
+              <time title="Created: 2019-12-23 00:19:32 / Modified: 00:22:49" itemprop="dateCreated datePublished" datetime="2019-12-23T00:19:32+08:00">2019-12-23</time>
             </span>
           
             
@@ -308,7 +308,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Kubeflow-v0-7-新功能與回顧"><a href="#Kubeflow-v0-7-新功能與回顧" class="headerlink" title="Kubeflow v0.7 新功能與回顧"></a>Kubeflow v0.7 新功能與回顧</h1><h2 id="介紹"><a href="#介紹" class="headerlink" title="介紹"></a>介紹</h2><p>Kubeflow是一個開源軟體，致力於提供使用者於Kubernetes上快速便捷的部署與管理ML Workflow。<br>Kubeflow在2019年11月推出0.7版，除了許多服務相繼邁入Beta外，也同時發佈了新的服務-<code>KFServing</code>。至此，Kubeflow完整了他的使用情境，讓使用者可以在此平台上完成模型建構、訓練到最後的部署。</p>
+        <h2 id="介紹"><a href="#介紹" class="headerlink" title="介紹"></a>介紹</h2><p>Kubeflow是一個開源軟體，致力於提供使用者於Kubernetes上快速便捷的部署與管理ML Workflow。<br>Kubeflow在2019年11月推出0.7版，除了許多服務相繼邁入Beta外，也同時發佈了新的服務-<code>KFServing</code>。至此，Kubeflow完整了他的使用情境，讓使用者可以在此平台上完成模型建構、訓練到最後的部署。</p>
 <p>我們今天來完整回顧一下Kubeflow 0.7版的更新。</p>
 <h2 id="Kubeflow-0-7-新功能-KFServing"><a href="#Kubeflow-0-7-新功能-KFServing" class="headerlink" title="Kubeflow 0.7 新功能 - KFServing"></a>Kubeflow 0.7 新功能 - KFServing</h2><p>KFServing在0.7版正式進入alpha，是此次發行最重要的新功能。</p>
 <h3 id="KFServing-介紹"><a href="#KFServing-介紹" class="headerlink" title="KFServing 介紹"></a>KFServing 介紹</h3><p>KFServing 提供了<code>部署模型(model deployment)</code>功能，將模型以Serveless方式部署到Kubernetes上面提供Inference服務。同時提供了通用的介面使KFServing相容不同的Framework，例如: Tensorflow、XGBoost與Scikit-learn等。</p>
@@ -426,7 +426,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Kubeflow-v0-7-新功能與回顧"><span class="nav-number">1.</span> <span class="nav-text">Kubeflow v0.7 新功能與回顧</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#介紹"><span class="nav-number">1.1.</span> <span class="nav-text">介紹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubeflow-0-7-新功能-KFServing"><span class="nav-number">1.2.</span> <span class="nav-text">Kubeflow 0.7 新功能 - KFServing</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#KFServing-介紹"><span class="nav-number">1.2.1.</span> <span class="nav-text">KFServing 介紹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用KFServing來部署模型進行服務"><span class="nav-number">1.2.2.</span> <span class="nav-text">使用KFServing來部署模型進行服務</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubeflow-更新"><span class="nav-number">1.3.</span> <span class="nav-text">Kubeflow 更新</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Kubeflow-notebook-service"><span class="nav-number">1.3.1.</span> <span class="nav-text">Kubeflow notebook service</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ML-Operators"><span class="nav-number">1.3.2.</span> <span class="nav-text">ML Operators</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kubeflow-Pipelines"><span class="nav-number">1.3.3.</span> <span class="nav-text">Kubeflow Pipelines</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Multiuser使用情境"><span class="nav-number">1.3.4.</span> <span class="nav-text">Multiuser使用情境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kubeflow-SDK"><span class="nav-number">1.3.5.</span> <span class="nav-text">Kubeflow SDK</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#未來展望"><span class="nav-number">1.4.</span> <span class="nav-text">未來展望</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#結語"><span class="nav-number">2.</span> <span class="nav-text">結語</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#介紹"><span class="nav-number">1.</span> <span class="nav-text">介紹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubeflow-0-7-新功能-KFServing"><span class="nav-number">2.</span> <span class="nav-text">Kubeflow 0.7 新功能 - KFServing</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#KFServing-介紹"><span class="nav-number">2.1.</span> <span class="nav-text">KFServing 介紹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用KFServing來部署模型進行服務"><span class="nav-number">2.2.</span> <span class="nav-text">使用KFServing來部署模型進行服務</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubeflow-更新"><span class="nav-number">3.</span> <span class="nav-text">Kubeflow 更新</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Kubeflow-notebook-service"><span class="nav-number">3.1.</span> <span class="nav-text">Kubeflow notebook service</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ML-Operators"><span class="nav-number">3.2.</span> <span class="nav-text">ML Operators</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kubeflow-Pipelines"><span class="nav-number">3.3.</span> <span class="nav-text">Kubeflow Pipelines</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Multiuser使用情境"><span class="nav-number">3.4.</span> <span class="nav-text">Multiuser使用情境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kubeflow-SDK"><span class="nav-number">3.5.</span> <span class="nav-text">Kubeflow SDK</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#未來展望"><span class="nav-number">4.</span> <span class="nav-text">未來展望</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#結語"><span class="nav-number"></span> <span class="nav-text">結語</span></a></div>
         
       </div>
       <!--/noindex-->
@@ -634,7 +634,7 @@
   function disqus_config() {
     this.page.url = "https://chanyilin.github.io/kubeflow-0-7-update.html";
     this.page.identifier = "kubeflow-0-7-update.html";
-    this.page.title = 'kubeflow-0.7-update';};
+    this.page.title = 'Kubeflow v0.7 新功能與回顧';};
   function loadComments() {
     if (window.DISQUS) {
       DISQUS.reset({
