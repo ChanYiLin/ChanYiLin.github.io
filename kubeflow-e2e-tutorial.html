@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-tw">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+  <meta name="keywords" content="Kubeflow,Kubernetes">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"right","display":"always","offset":12,"onmobile":true},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="一個 深度學習模型 (Deep Learning Model) 的開發牽涉到許多的步驟，包含從一開始的資料收集分析與處理、模型的開發與訓練。此篇部落格將介紹如何使用 Kubeflow 來完成深度學習模型開發典型應用情境。">
+<meta name="keywords" content="Kubeflow,Istio,tf-operator,KFServing,Kubeflow 教學">
+<meta property="og:type" content="article">
+<meta property="og:title" content="完整 Kubeflow 使用教學 - 開發 ML 模型、進行分散式訓練與部署服務">
+<meta property="og:url" content="https://chanyilin.github.io/kubeflow-e2e-tutorial.html">
+<meta property="og:site_name" content="Jack&#39;s Blog">
+<meta property="og:description" content="一個 深度學習模型 (Deep Learning Model) 的開發牽涉到許多的步驟，包含從一開始的資料收集分析與處理、模型的開發與訓練。此篇部落格將介紹如何使用 Kubeflow 來完成深度學習模型開發典型應用情境。">
+<meta property="og:locale" content="zh-tw">
+<meta property="og:image" content="https://i.imgur.com/N1Zp6ME.png">
+<meta property="og:image" content="https://i.imgur.com/9UsLVgZ.png">
+<meta property="og:image" content="https://i.imgur.com/l8a9c8x.png">
+<meta property="og:image" content="https://i.imgur.com/8o3V02u.png">
+<meta property="og:image" content="https://i.imgur.com/8P1rctY.png">
+<meta property="og:image" content="https://i.imgur.com/va6h4sp.png">
+<meta property="og:image" content="https://i.imgur.com/6XnizLp.png">
+<meta property="og:image" content="https://i.imgur.com/gUZs1f6.png">
+<meta property="og:image" content="https://i.imgur.com/yI4HAom.png">
+<meta property="og:image" content="https://i.imgur.com/TObD8DB.png">
+<meta property="og:image" content="https://i.imgur.com/jB6jYVf.png">
+<meta property="og:image" content="https://i.imgur.com/7uVBbWz.png">
+<meta property="og:image" content="https://i.imgur.com/1Il88ZR.png">
+<meta property="og:image" content="https://i.imgur.com/7a8U6xj.png">
+<meta property="og:image" content="https://i.imgur.com/5jEYZhO.png">
+<meta property="og:image" content="https://i.imgur.com/uzQkC4D.png">
+<meta property="og:image" content="https://i.imgur.com/X0LdgDV.png">
+<meta property="og:updated_time" content="2020-01-21T08:30:38.098Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="完整 Kubeflow 使用教學 - 開發 ML 模型、進行分散式訓練與部署服務">
+<meta name="twitter:description" content="一個 深度學習模型 (Deep Learning Model) 的開發牽涉到許多的步驟，包含從一開始的資料收集分析與處理、模型的開發與訓練。此篇部落格將介紹如何使用 Kubeflow 來完成深度學習模型開發典型應用情境。">
+<meta name="twitter:image" content="https://i.imgur.com/N1Zp6ME.png">
+  <link rel="canonical" href="https://chanyilin.github.io/kubeflow-e2e-tutorial">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>完整 Kubeflow 使用教學 - 開發 ML 模型、進行分散式訓練與部署服務 | Jack's Blog</title>
+  <meta name="generator" content="Hexo 3.8.0">
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-58777369-2"></script>
+  <script>
+    var host = window.location.hostname;
+    if (host !== "localhost" || !true) {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-58777369-2');
+    }
+  </script>
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-tw">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Jack's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">Distributed World</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="https://chanyilin.github.io/kubeflow-e2e-tutorial.html">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jack Lin">
+      <meta itemprop="description" content="目前任職於 InfuseAI. 專注於Kubeflow與Kubernetes. 同時也是 Kubeflow member與Kubeflow/tf-operator reviewer.">
+      <meta itemprop="image" content="/images/me.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jack's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">完整 Kubeflow 使用教學 - 開發 ML 模型、進行分散式訓練與部署服務
+
+          
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-01-21 16:27:57 / Modified: 16:30:38" itemprop="dateCreated datePublished" datetime="2020-01-21T16:27:57+08:00">2020-01-21</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Kubernetes/Kubeflow/" itemprop="url" rel="index"><span itemprop="name">Kubeflow</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span class="post-meta-item" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/kubeflow-e2e-tutorial.html#comments" itemprop="discussionUrl"><span class="post-comments-count disqus-comment-count" data-disqus-identifier="kubeflow-e2e-tutorial.html" itemprop="commentCount"></span></a>
+  </span>
+  
+  
+            <div class="post-description">一個 深度學習模型 (Deep Learning Model) 的開發牽涉到許多的步驟，包含從一開始的資料收集分析與處理、模型的開發與訓練。此篇部落格將介紹如何使用 Kubeflow 來完成深度學習模型開發典型應用情境。</div>
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="https://i.imgur.com/N1Zp6ME.png" alt=""></p>
+<h2 id="簡介"><a href="#簡介" class="headerlink" title="簡介"></a>簡介</h2><p>一個 深度學習模型 (Deep Learning Model) 的開發牽涉到許多的步驟，包含從一開始的資料收集分析與處理、模型的開發與訓練<br>，到最後將模型進行部署並提供服務使用。這其中牽涉到許多開發環境與開發工具的轉換，對開發人員是一個不小的負擔。而 Kubeflow 便是一個建立在 Kubernetes 之上的模型開發平台，提供開發模型所需的所有工具，並且藉由 Kubernetes 達到資源、網路的彈性控管。</p>
+<p>今天要來介紹的便是如何使用 Kubeflow 來完成深度學習模型開發、分散式訓練以及部署模型服務的典型應用情境，如下圖。</p>
+<p><img src="https://i.imgur.com/9UsLVgZ.png" alt=""></p>
+<h3 id="事前準備與前言"><a href="#事前準備與前言" class="headerlink" title="事前準備與前言"></a>事前準備與前言</h3><p>本篇教學牽涉使用 GKE (google kubernetes engine)</p>
+<ol>
+<li>部署 <a href="https://www.kubeflow.org/" target="_blank" rel="noopener">Kubeflow</a> </li>
+<li>使用 <a href="https://github.com/kubeflow/kubeflow/tree/master/components/jupyter-web-app" target="_blank" rel="noopener">Kubeflow/Jupyterhub</a> 開啟 Notebook 開發模型</li>
+<li>使用 <a href="https://github.com/kubeflow/tf-operator" target="_blank" rel="noopener">Kubeflow/tf-operator</a> 部署 TFJob 進行模型訓練</li>
+<li>使用 <a href="https://github.com/kubeflow/kfserving" target="_blank" rel="noopener">Kubeflow/KFServing</a> 部署訓練好的模型</li>
+</ol>
+<p>本篇教學用到的程式碼與 yaml 檔，可以在我的 <a href="https://github.com/ChanYiLin/kubeflow-e2e-example" target="_blank" rel="noopener">Github Repo</a> 找到，歡迎參考。</p>
+<p>另外本篇也大量參考此 <a href="https://github.com/kubeflow/examples/tree/master/mnist" target="_blank" rel="noopener">範例</a>，也可以至此參考。</p>
+<h2 id="使用-GKE-部署-Kubeflow"><a href="#使用-GKE-部署-Kubeflow" class="headerlink" title="使用 GKE 部署 Kubeflow"></a>使用 GKE 部署 Kubeflow</h2><p>本篇文章範例將使用 Google Kubernetes Engine (GKE) 來部署 Kubernetes 與安裝 Kubeflow，同時將會使用 Google Cloud Storage (GCS) 來儲存訓練好之模型。</p>
+<h3 id="使用-GKE-部署-Kubernetes"><a href="#使用-GKE-部署-Kubernetes" class="headerlink" title="使用 GKE 部署 Kubernetes"></a>使用 GKE 部署 Kubernetes</h3><p>GKE 在最近的版本中加入了 Workload Identity 的功能，使得Kubernetes 集群中的 Pod 可以使用代表 <a href="https://cloud.google.com/iam/docs/service-accounts" target="_blank" rel="noopener">Google service account</a> 的 <a href="hhttps://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/" target="_blank" rel="noopener">Kubernetes service account</a> 來使用其他的Google 雲端服務。詳細的介紹可以參考這邊: <a href="https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity" target="_blank" rel="noopener">Workload Identity</a></p>
+<p>因此在我們創建 Kubernetes 集群的設定中有幾點要注意。</p>
+<ol>
+<li>選擇 <code>1.15版本</code> ，創建4個節點，每一個包含 <code>2 vcpu / 7.5GB mem</code></li>
+</ol>
+<p><img src="https://i.imgur.com/l8a9c8x.png" alt=""></p>
+<ol start="2">
+<li>開啟 GCS (儲存空間) 的 API 存取權</li>
+</ol>
+<p><img src="https://i.imgur.com/8o3V02u.png" alt=""></p>
+<ol start="3">
+<li>於「可用性、網路、安全性和其他功能」的選項中開啟 Workload Identity</li>
+</ol>
+<p><img src="https://i.imgur.com/8P1rctY.png" alt=""></p>
+<h3 id="部署-Kubeflow"><a href="#部署-Kubeflow" class="headerlink" title="部署 Kubeflow"></a>部署 Kubeflow</h3><p>我們使用<a href="https://www.kubeflow.org/docs/started/k8s/kfctl-k8s-istio/" target="_blank" rel="noopener">此文件</a>部署 Kubeflow ，此版本為無<a href="https://chanyilin.github.io/kubeflow-v0-7-0-deploy.html">認證功能</a>的版本。</p>
+<p>Kubeflow 目前透過子專案 <code>kfctl</code> 來發布與安裝 Kubeflow</p>
+<ol>
+<li>下載 kfctl v1.0 發布版本 <a href="https://github.com/kubeflow/kfctl/releases/tag/v1.0-rc.1" target="_blank" rel="noopener">Kubeflow releases page</a></li>
+<li>解壓縮 <code>tar -xvf kfctl_v0.7.1_&lt;platform&gt;.tar.gz</code></li>
+<li><p>設定環境變數，方便後續部署。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 以利後需使用kfctl指令</span></span><br><span class="line">$ <span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="string">"&lt;path-to-kfctl&gt;"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 部署將會使用這個設定檔</span></span><br><span class="line">$ <span class="built_in">export</span> CONFIG_URI=<span class="string">"https://raw.githubusercontent.com/kubeflow/manifests/v0.7-branch/kfdef/kfctl_k8s_istio.0.7.1.yaml"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Kubeflow部署過程生成的設定檔存放的資料夾名，可以設定成`my-kubeflow`或是`kf-test`</span></span><br><span class="line">$ <span class="built_in">export</span> KF_NAME=&lt;your choice of name <span class="keyword">for</span> the Kubeflow deployment&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 放置Kubeflow專案的資料夾路徑</span></span><br><span class="line">$ <span class="built_in">export</span> BASE_DIR=&lt;path to a base directory&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 此次部署Kubeflow的的完整路徑</span></span><br><span class="line">$ <span class="built_in">export</span> KF_DIR=<span class="variable">$&#123;BASE_DIR&#125;</span>/<span class="variable">$&#123;KF_NAME&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用官方的 kfctl 即可方便的一個指令部署。</p>
+</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 來到Kubeflow專案底下</span></span><br><span class="line">$ mkdir -p <span class="variable">$&#123;KF_DIR&#125;</span></span><br><span class="line"></span><br><span class="line">$ <span class="built_in">cd</span> <span class="variable">$&#123;KF_DIR&#125;</span></span><br><span class="line"></span><br><span class="line">$ kfctl apply -V -f <span class="variable">$&#123;CONFIG_URI&#125;</span></span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>檢驗部署完成</li>
+</ol>
+<p>等候大約幾分鐘後，即會看到以下部署成功的字樣</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">INFO[0193] Applied the configuration Successfully!       </span><br><span class="line">filename=&quot;cmd/apply.go:72&quot;</span><br></pre></td></tr></table></figure>
+<p>可以檢查所有 Kubeflow namespace 底下的 pod 來確認是否部署成功。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get po -n kubeflow</span><br><span class="line">NAME                                                          READY   STATUS    RESTARTS   AGE</span><br><span class="line">admission-webhook-deployment-6cf94887bf-t4zpv                 1/1     Running   0          10h</span><br><span class="line">application-controller-stateful-set-0                         1/1     Running   0          10h</span><br><span class="line">argo-ui-7fd48cdc66-dt6mf                                      1/1     Running   0          10h</span><br><span class="line">centraldashboard-64c4cb4c6-fp6z8                              1/1     Running   0          10h</span><br><span class="line">jupyter-web-app-deployment-5f9bbcb94b-pvn67                   1/1     Running   0          10h</span><br><span class="line">katib-controller-5645cb8675-kk86l                             1/1     Running   1          10h</span><br><span class="line">katib-db-57d7c5b64b-x6qxp                                     1/1     Running   0          10h</span><br><span class="line">katib-manager-5679669f96-vvf92                                1/1     Running   1          10h</span><br><span class="line">katib-ui-68c6747887-2fbjw                                     1/1     Running   0          10h</span><br><span class="line">metadata-db-7f78b5fbf8-cfngw                                  1/1     Running   0          10h</span><br><span class="line">metadata-deployment-6d47b67dcd-lzcng                          1/1     Running   0          10h</span><br><span class="line">metadata-deployment-6d47b67dcd-rzdlv                          1/1     Running   2          10h</span><br><span class="line">metadata-envoy-deployment-75d958657-nb9cg                     1/1     Running   0          10h</span><br><span class="line">metadata-grpc-deployment-9d79d848-csnmj                       1/1     Running   4          10h</span><br><span class="line">metadata-grpc-deployment-9d79d848-zkm7z                       1/1     Running   3          10h</span><br><span class="line">metadata-ui-547b468655-7l9m2                                  1/1     Running   0          10h</span><br><span class="line">minio-d96d4f4cf-9tml2                                         1/1     Running   0          10h</span><br><span class="line">ml-pipeline-86cf8589b9-662mq                                  1/1     Running   0          10h</span><br><span class="line">ml-pipeline-ml-pipeline-visualizationserver-d494fcb84-g9kdr   1/1     Running   0          10h</span><br><span class="line">ml-pipeline-persistenceagent-5c4d6c5b54-qfjm6                 1/1     Running   0          10h</span><br><span class="line">ml-pipeline-scheduledworkflow-7fbfb9c745-7tbcj                1/1     Running   0          10h</span><br><span class="line">ml-pipeline-ui-55cd89c8fc-gf8sc                               1/1     Running   0          10h</span><br><span class="line">ml-pipeline-viewer-controller-deployment-68c746f8d5-hvzrs     1/1     Running   0          10h</span><br><span class="line">mysql-74578b646b-tbsmk                                        1/1     Running   0          10h</span><br><span class="line">notebook-controller-deployment-6f45dbcd6d-k6jrw               1/1     Running   0          10h</span><br><span class="line">profiles-deployment-6f7ddff899-n4hwh                          2/2     Running   0          10h</span><br><span class="line">pytorch-operator-7fcb66d589-xb7bp                             1/1     Running   0          10h</span><br><span class="line">seldon-operator-controller-manager-0                          1/1     Running   1          10h</span><br><span class="line">spartakus-volunteer-ddc6fcd5f-pqs6z                           1/1     Running   0          10h</span><br><span class="line">tensorboard-55d9cd67bc-59nqx                                  0/1     Pending   0          10h</span><br><span class="line">tf-job-operator-76dd589674-dkpqp                              1/1     Running   0          10h</span><br><span class="line">workflow-controller-645f7bd769-nznh4                          1/1     Running   0          10h</span><br></pre></td></tr></table></figure>
+<p>因為此版本會同時部署 istio ，因此也可以檢查 istio 相關資源是否成功部署。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get po -n istio-system</span><br></pre></td></tr></table></figure>
+<h3 id="創建-Service-Account"><a href="#創建-Service-Account" class="headerlink" title="創建 Service Account"></a>創建 Service Account</h3><p>Service Account 的目的是使得 Kubernetes 內部的 pod 可以直接使用 Google Service Account 來存取 Google 雲端服務。以下 Service Account 名稱可以自己替換。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 創建 Google Service Account</span></span><br><span class="line">$ gcloud iam service-accounts create gcp-sa <span class="comment"># $GSA_NAME</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 創建 Kubernetes Service Account</span></span><br><span class="line">$ kubectl create serviceaccount --namespace kubeflow k8s-sa <span class="comment"># $KSA_NAME</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 將上述兩個 Service Account 綁上關聯</span></span><br><span class="line">$ gcloud iam service-accounts add-iam-policy-binding \</span><br><span class="line">  --role roles/iam.workloadIdentityUser \</span><br><span class="line">  --member <span class="string">"serviceAccount:[PROJECT_ID].svc.id.goog[kubeflow/[KSA_NAME]]"</span> \</span><br><span class="line">  [GSA_NAME]@[PROJECT_ID].iam.gserviceaccount.com</span><br><span class="line"></span><br><span class="line">$ kubectl annotate serviceaccount \</span><br><span class="line">  --namespace kubeflow \</span><br><span class="line">  [KSA_NAME] \</span><br><span class="line">  iam.gke.io/gcp-service-account=[GSA_NAME]@[PROJECT_ID].iam.gserviceaccount.com</span><br></pre></td></tr></table></figure>
+<h3 id="Kubeflow-部署完成"><a href="#Kubeflow-部署完成" class="headerlink" title="Kubeflow 部署完成"></a>Kubeflow 部署完成</h3><p>至此 Kubeflow 即部署完成，你可以透過 Port-forward 來透過 istio-gateway 使用 Kubeflow UI。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 透過localhost:8080連上</span><br><span class="line">kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.imgur.com/va6h4sp.png" alt=""></p>
+<p>使用 <code>Notebook Servers</code> 來打開 Jupyter Notebook 進行模型開發。</p>
+<p><img src="https://i.imgur.com/6XnizLp.png" alt=""></p>
+<p>Jupyter Notebook</p>
+<p><img src="https://i.imgur.com/gUZs1f6.png" alt=""></p>
+<h2 id="使用-tf-operator-進行分散式訓練"><a href="#使用-tf-operator-進行分散式訓練" class="headerlink" title="使用 tf-operator 進行分散式訓練"></a>使用 tf-operator 進行分散式訓練</h2><h3 id="tf-operator-與-TFJob-介紹"><a href="#tf-operator-與-TFJob-介紹" class="headerlink" title="tf-operator 與 TFJob 介紹"></a>tf-operator 與 TFJob 介紹</h3><p>tf-operator 可以說是 Kubeflow 裡面最早的服務，作為一個operator 其任務便是部署與管理一個 tensorflow 分散式訓練任務的生命週期。一個 tensorflow 分散式訓練可以分為幾個角色，</p>
+<ol>
+<li><code>PS</code>: 儲存模型的參數，接收來自 Worker 的參數更新</li>
+<li><code>Worker</code>: 實際進行模型訓練的角色，每一次的 epoch 結束都會將更新的參數上傳至 PS ，並取得新的參數進行訓練。</li>
+<li><code>Chief</code>: 一樣也是 Worker 會進行模型訓練，但是同時負責儲存訓練好的模型或是 checkpoint 的角色，如果沒有特別指定則預設會是 <code>Worker0</code>。</li>
+</ol>
+<p>而使用者可以透過 tfjob CRD 來定義一組分散式訓練，包含每一個角色所使用的 image 、資源與副本數量。</p>
+<h3 id="服務發現"><a href="#服務發現" class="headerlink" title="服務發現"></a>服務發現</h3><p>如果曾經使用實體機部署過分散式訓練，有一個很大的重點在於如何讓上述的三個角色在開始執行後能夠發現彼此。</p>
+<p>在 <a href="https://www.tensorflow.org/guide/distributed_training" target="_blank" rel="noopener">tensorflow distributed training</a> 文件中提到，必須建立一個環境變數 <code>TF_Config</code>，是先填寫每一個角色的所在的 host 與 port，如此一來 tensorflow 才能建立起 <code>clusterspec</code> 與 <code>session</code> 來開始訓練。</p>
+<p>而當環境轉移到 Kuburnetes 上時，因為每一個角色以 pod 存在，並透過 service 建立服務與外界互動，因此在實體機上面必須手動設定位址這件事情，我們直接交由 service 與 kubernetes 內部的服務發現運作即可。</p>
+<p>簡單來說，tf-operator 除了創建每一個角色的 pods/services 外，同時也會幫你在每一個 pod 的環境變數加上 <code>TF_CONFIG</code> 來記錄所有角色的位置，使得每一個角色可以參考此記錄來建立 <code>tf.train.clusterspec</code> 。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 舉例: </span></span><br><span class="line"><span class="comment"># 下面的網路位置為從 tf-operator 幫你附上的 env 取得</span></span><br><span class="line"><span class="comment"># 這些位址代表 kubernetes 內部的服務名稱</span></span><br><span class="line"><span class="comment"># 由 Kubernetes 內部的 DNS 維護與進行服務發現</span></span><br><span class="line">cluster = tf.train.ClusterSpec(&#123;</span><br><span class="line"><span class="string">"worker"</span>: [<span class="string">"worker0.example.com:2222"</span>,<span class="string">"worker1.example.com:2222"</span>,<span class="string">"worker2.example.com:2222"</span>],</span><br><span class="line"><span class="string">"ps"</span>: [<span class="string">"ps0.example.com:2222"</span>,<span class="string">"ps1.example.com:2222"</span>]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>而當 <code>Chief</code> 正常結束 ( <code>exit 0</code> ) ，tf-operator會判定此訓練成功結束，將根據資源釋放。</p>
+<p>下圖為一個分散式訓練的示意圖:</p>
+<p><img src="https://i.imgur.com/yI4HAom.png" alt=""></p>
+<h3 id="進行-Mnist-分散式訓練"><a href="#進行-Mnist-分散式訓練" class="headerlink" title="進行 Mnist 分散式訓練"></a>進行 Mnist 分散式訓練</h3><p>這邊我們使用大家都非常熟悉的手寫數字辨識範例，但是做了一點修改成為分散式訓練的版本: <a href="https://github.com/kubeflow/examples/blob/master/mnist/model.py" target="_blank" rel="noopener">model.py</a></p>
+<p>為了後續將會使用 TFServing 來進行 Inference ，我們做的修改包含</p>
+<ol>
+<li><code>tf.estimator.train_and_evaluate</code> 來進行訓練</li>
+<li><code>classifier.export_savedmodel</code> 儲存模型</li>
+</ol>
+<p>Note: 這篇教學不包含將模型程式碼打包成 docker image，詳細文件可以參考<a href="https://github.com/kubeflow/examples/tree/master/mnist" target="_blank" rel="noopener">原文</a>。此處我們直接使用範例包好的 image 。</p>
+<h3 id="部署-TFJob-進行訓練"><a href="#部署-TFJob-進行訓練" class="headerlink" title="部署 TFJob 進行訓練"></a>部署 TFJob 進行訓練</h3><p>首先我們先創建一個 GCS Bucket，將在最後作為儲存模型的空間。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gsutil mb gs://$BUCKET/</span><br></pre></td></tr></table></figure></p>
+<p>接著至 Google Cloud Console 的 GCS 頁面，編輯你的 BUCKET 權限加入剛剛的 Google Service Account ( 以先前的例子來說即為 gcp-sa@XXX ) 成為 <code>管理員</code> 。</p>
+<p>有了模型程式碼，且創建好物件儲存空間後後，接下來我們使用以下 yaml 檔來部署一個 <code>TFJob</code> 進行分散式訓練。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">kubeflow.org/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">TFJob</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">mnist-train-dist</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kubeflow</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  tfReplicaSpecs:</span> <span class="comment"># 分成三種角色各自填寫</span></span><br><span class="line"><span class="attr">    Chief:</span></span><br><span class="line"><span class="attr">      replicas:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">      template:</span></span><br><span class="line"><span class="attr">        metadata:</span></span><br><span class="line"><span class="attr">          annotations:</span></span><br><span class="line">            <span class="string">sidecar.istio.io/inject:</span> <span class="string">"false"</span></span><br><span class="line"><span class="attr">        spec:</span></span><br><span class="line"><span class="attr">          containers:</span></span><br><span class="line"><span class="attr">            - command:</span></span><br><span class="line"><span class="bullet">                -</span> <span class="string">/usr/bin/python</span></span><br><span class="line"><span class="bullet">                -</span> <span class="string">/opt/model.py</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-model-dir=$(modelDir)</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-export-dir=$(exportDir)</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-train-steps=$(trainSteps)</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-batch-size=$(batchSize)</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-learning-rate=$(learningRate)</span></span><br><span class="line"><span class="attr">              env:</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">modelDir</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="attr">gs://$&#123;BUCKET&#125;/my-model</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">exportDir</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="attr">gs://$&#123;BUCKET&#125;/my-model/export</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">trainSteps</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="string">"200"</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">batchSize</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="string">"100"</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">learningRate</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="string">"0.01"</span></span><br><span class="line"><span class="attr">              image:</span> <span class="string">gcr.io/kubeflow-examples/mnist/model:build-1202842504546750464</span></span><br><span class="line"><span class="attr">              name:</span> <span class="string">tensorflow</span></span><br><span class="line"><span class="attr">              workingDir:</span> <span class="string">/opt</span></span><br><span class="line"><span class="attr">          restartPolicy:</span> <span class="string">OnFailure</span></span><br><span class="line"><span class="attr">          serviceAccount:</span> <span class="string">k8s-sa</span></span><br><span class="line"><span class="attr">    Ps:</span></span><br><span class="line"><span class="attr">      replicas:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">      template:</span></span><br><span class="line"><span class="attr">        metadata:</span></span><br><span class="line"><span class="attr">          annotations:</span></span><br><span class="line">            <span class="string">sidecar.istio.io/inject:</span> <span class="string">"false"</span></span><br><span class="line"><span class="attr">        spec:</span></span><br><span class="line"><span class="attr">          containers:</span></span><br><span class="line"><span class="attr">            - command:</span></span><br><span class="line"><span class="bullet">                -</span> <span class="string">/usr/bin/python</span></span><br><span class="line"><span class="bullet">                -</span> <span class="string">/opt/model.py</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-model-dir=$(modelDir)</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-export-dir=$(exportDir)</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-train-steps=$(trainSteps)</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-batch-size=$(batchSize)</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-learning-rate=$(learningRate)</span></span><br><span class="line"><span class="attr">              env:</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">modelDir</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="attr">gs://$&#123;BUCKET&#125;/my-model</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">exportDir</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="attr">gs://$&#123;BUCKET&#125;/my-model/export</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">trainSteps</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="string">"200"</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">batchSize</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="string">"100"</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">learningRate</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="string">"0.01"</span></span><br><span class="line"><span class="attr">              image:</span> <span class="string">gcr.io/kubeflow-examples/mnist/model:build-1202842504546750464</span></span><br><span class="line"><span class="attr">              name:</span> <span class="string">tensorflow</span></span><br><span class="line"><span class="attr">              workingDir:</span> <span class="string">/opt</span></span><br><span class="line"><span class="attr">          restartPolicy:</span> <span class="string">OnFailure</span></span><br><span class="line"><span class="attr">          serviceAccount:</span> <span class="string">k8s-sa</span></span><br><span class="line"><span class="attr">    Worker:</span></span><br><span class="line"><span class="attr">      replicas:</span> <span class="number">2</span></span><br><span class="line"><span class="attr">      template:</span></span><br><span class="line"><span class="attr">        metadata:</span></span><br><span class="line"><span class="attr">          annotations:</span></span><br><span class="line">            <span class="string">sidecar.istio.io/inject:</span> <span class="string">"false"</span></span><br><span class="line"><span class="attr">        spec:</span></span><br><span class="line"><span class="attr">          containers:</span></span><br><span class="line"><span class="attr">            - command:</span></span><br><span class="line"><span class="bullet">                -</span> <span class="string">/usr/bin/python</span></span><br><span class="line"><span class="bullet">                -</span> <span class="string">/opt/model.py</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-model-dir=$(modelDir)</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-export-dir=$(exportDir)</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-train-steps=$(trainSteps)</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-batch-size=$(batchSize)</span></span><br><span class="line"><span class="bullet">                -</span> <span class="bullet">--tf-learning-rate=$(learningRate)</span></span><br><span class="line"><span class="attr">              env:</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">modelDir</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="attr">gs://$&#123;BUCKET&#125;/my-model</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">exportDir</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="attr">gs://$&#123;BUCKET&#125;/my-model/export</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">trainSteps</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="string">"200"</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">batchSize</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="string">"100"</span></span><br><span class="line"><span class="attr">                - name:</span> <span class="string">learningRate</span></span><br><span class="line"><span class="attr">                  value:</span> <span class="string">"0.01"</span></span><br><span class="line"><span class="attr">              image:</span> <span class="string">gcr.io/kubeflow-examples/mnist/model:build-1202842504546750464</span></span><br><span class="line"><span class="attr">              name:</span> <span class="string">tensorflow</span></span><br><span class="line"><span class="attr">              workingDir:</span> <span class="string">/opt</span></span><br><span class="line"><span class="attr">          restartPolicy:</span> <span class="string">OnFailure</span></span><br><span class="line"><span class="attr">          serviceAccount:</span> <span class="string">k8s-sa</span></span><br></pre></td></tr></table></figure>
+<p>將上面的 TFJob 儲存成 mnist_tfjob.yaml ，進行部署</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl apply -f mnist_tfjob.yaml</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 將會看到 tf-operator 自動幫你創建了相對應的 TFJob 與 pods</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> kubectl get tfjob -n kubeflow</span></span><br><span class="line">mnist-train-dist   Running   1s</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> kubectl get pod -n kubeflow</span></span><br><span class="line">mnist-train-dist-chief-0                                       0/1     ContainerCreating   0          1s</span><br><span class="line">mnist-train-dist-ps-0                                          0/1     ContainerCreating   0          1s</span><br><span class="line">mnist-train-dist-worker-0                                      0/1     ContainerCreating   0          1s</span><br><span class="line">mnist-train-dist-worker-1                                      0/1     ContainerCreating   0          1s</span><br></pre></td></tr></table></figure>
+<p>且每一個 pod 會多一個環境變數 <code>TF_CONFIG</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">kubectl</span> <span class="string">get</span> <span class="string">pod/mnist-train-dist-worker-0</span> <span class="bullet">-n</span> <span class="string">kubeflow</span> <span class="bullet">-oyaml</span></span><br><span class="line"></span><br><span class="line"><span class="string">...</span></span><br><span class="line"><span class="attr">- name:</span> <span class="string">TF_CONFIG</span></span><br><span class="line"><span class="attr">      value:</span> <span class="string">'&#123;"cluster":&#123;</span></span><br><span class="line"><span class="string">	"chief":["mnist-train-dist-chief-0.kubeflow.svc:2222"],</span></span><br><span class="line"><span class="string">	"ps":["mnist-train-dist-ps-0.kubeflow.svc:2222"],</span></span><br><span class="line"><span class="string">	"worker":["mnist-train-dist-worker-0.kubeflow.svc:2222","mnist-train-dist-worker-1.kubeflow.svc:2222"]&#125;,</span></span><br><span class="line"><span class="string">	"task":&#123;"type":"worker","index":0&#125;,</span></span><br><span class="line"><span class="string">	"environment":"cloud"&#125;'</span></span><br><span class="line"><span class="string">...</span></span><br></pre></td></tr></table></figure>
+<p>觀察 <code>Chief</code> 的 log，可以看到成功訓練完成，且將訓練好的模型上傳至 GCS</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">INFO:tensorflow:Start Tensorflow server.</span><br><span class="line">2020-01-20 11:59:30.410103: I tensorflow/core/platform/cpu_feature_guard.cc:140] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA</span><br><span class="line">2020-01-20 11:59:30.411281: I tensorflow/core/distributed_runtime/rpc/grpc_channel.cc:215] Initialize GrpcChannelCache for job chief -&gt; &#123;0 -&gt; localhost:2222&#125;</span><br><span class="line">2020-01-20 11:59:30.411312: I tensorflow/core/distributed_runtime/rpc/grpc_channel.cc:215] Initialize GrpcChannelCache for job ps -&gt; &#123;0 -&gt; mnist-train-dist-ps-0.kubeflow.svc:2222&#125;</span><br><span class="line">2020-01-20 11:59:30.411327: I tensorflow/core/distributed_runtime/rpc/grpc_channel.cc:215] Initialize GrpcChannelCache for job worker -&gt; &#123;0 -&gt; mnist-train-dist-worker-0.kubeflow.svc:2222, 1 -&gt; mnist-train-dist-worker-1.kubeflow.svc:2222&#125;</span><br><span class="line">2020-01-20 11:59:30.412206: I tensorflow/core/distributed_runtime/rpc/grpc_server_lib.cc:333] Started server with target: grpc://localhost:2222</span><br><span class="line">INFO:tensorflow:Skipping training since max_steps has already saved.</span><br><span class="line">INFO:tensorflow:Calling model_fn.</span><br><span class="line">INFO:tensorflow:Done calling model_fn.</span><br><span class="line">INFO:tensorflow:Signatures INCLUDED in export for Classify: None</span><br><span class="line">INFO:tensorflow:Signatures INCLUDED in export for Regress: None</span><br><span class="line">INFO:tensorflow:Signatures INCLUDED in export for Predict: ['serving_default', 'classes']</span><br><span class="line">INFO:tensorflow:Restoring parameters from gs://$&#123;BUCKET&#125;/my-model/model.ckpt-203</span><br><span class="line">INFO:tensorflow:Assets added to graph.</span><br><span class="line">INFO:tensorflow:No assets to write.</span><br><span class="line">INFO:tensorflow:SavedModel written to: gs://$&#123;BUCKET&#125;/my-model/export/temp-1579521577/saved_model.pb</span><br><span class="line">Successfully downloaded train-images-idx3-ubyte.gz 9912422 bytes.</span><br><span class="line">Extracting /tmp/data/train-images-idx3-ubyte.gz</span><br><span class="line">Successfully downloaded train-labels-idx1-ubyte.gz 28881 bytes.</span><br><span class="line">Extracting /tmp/data/train-labels-idx1-ubyte.gz</span><br><span class="line">Successfully downloaded t10k-images-idx3-ubyte.gz 1648877 bytes.</span><br><span class="line">Extracting /tmp/data/t10k-images-idx3-ubyte.gz</span><br><span class="line">Successfully downloaded t10k-labels-idx1-ubyte.gz 4542 bytes.</span><br><span class="line">Extracting /tmp/data/t10k-labels-idx1-ubyte.gz</span><br><span class="line">Train and evaluate</span><br><span class="line">Training done</span><br><span class="line">Export saved model</span><br><span class="line">Done exporting the model</span><br></pre></td></tr></table></figure>
+<p>最後在 GCS 上面可以看到剛剛成功訓練完的模型，包含一個 <code>.pb</code> 檔與參數。</p>
+<p><img src="https://i.imgur.com/TObD8DB.png" alt=""></p>
+<p>至此便完成了使用 Kubeflow 執行分散式訓練任務。<br>當然如果你的應用情境是單機訓練，也可以使用 TFJob ，但是只需填寫 Worker spec 並且設定 replcas 為1即可。</p>
+<h2 id="Inference"><a href="#Inference" class="headerlink" title="Inference"></a>Inference</h2><p>訓練模型的最終目的就是讓模型自己找出模型內最佳參數，使得預測結果盡量符合訓練集。而訓練完成後我們便可以使用該模型，輸入不在訓練集內的同類型資料，可能是一段文字或是一張圖片，並期望得到一個準確的預測結果或是分類，這就稱為 Inference。</p>
+<p>比方說輸入一個圖片，模型會產出一個描述圖片的文字。下圖是一個結合 CNN 與 RNN 的 <a href="https://github.com/tensorflow/models/tree/master/research/im2txt" target="_blank" rel="noopener">Image Caption Generator</a> 模型</p>
+<p><img src="https://i.imgur.com/jB6jYVf.png" alt=""></p>
+<h3 id="TFServing-與使用"><a href="#TFServing-與使用" class="headerlink" title="TFServing 與使用"></a>TFServing 與使用</h3><p><img src="https://i.imgur.com/7uVBbWz.png" alt=""></p>
+<p>如何將訓練完的模型上線，其重要性不亞於訓練本身，畢竟模型可以被使用才有價值。但是隨著時間推移與資訊的更新，模型的準確率可能下降因為不符合現在的趨勢，模型可能每過一段時間就要再訓練一次再重新部署。也就如上面的圖，模型會不斷進行training並推出v1, v2…。</p>
+<p>而為了優化整個部署與 Inference 流程，Google 推出了<a href="https://www.tensorflow.org/tfx/guide/serving" target="_blank" rel="noopener">Tensorflow Serving</a>，來解決模型部署問題。</p>
+<p>使用方式非常簡單，有了剛剛的 <code>.pb</code> 模型檔後，即可直接使用 Tensorflow 提供的 Docker image 來部署該模型並提供一個服務端口，使得使用者可以直接透過該端口傳入一個請求，可能是一個圖片或是文字來得到預測結果。</p>
+<p>一個簡單的範例，模型也僅僅是使用 Tensorflow 寫一個將矩陣中的每一個元素 <code>除以2加上1</code> 的模型。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 下載 tensorflow serving image</span></span><br><span class="line">docker pull tensorflow/serving</span><br><span class="line"></span><br><span class="line">git clone https://github.com/tensorflow/serving</span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用 repo 中已經提的範例</span></span><br><span class="line">TESTDATA="$(pwd)/serving/tensorflow_serving/servables/tensorflow/testdata"</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Start TensorFlow Serving container and open the REST API port</span></span><br><span class="line">docker run -t --rm -p 8501:8501 \</span><br><span class="line">    -v "$TESTDATA/saved_model_half_plus_two_cpu:/models/half_plus_two" \</span><br><span class="line">    -e MODEL_NAME=half_plus_two \</span><br><span class="line">    tensorflow/serving &amp;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Query the model using the predict API</span></span><br><span class="line">curl -d '&#123;"instances": [1.0, 2.0, 5.0]&#125;' \</span><br><span class="line">    -X POST http://localhost:8501/v1/models/half_plus_two:predict</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Returns =&gt; &#123; <span class="string">"predictions"</span>: [2.5, 3.0, 4.5] &#125;</span></span><br></pre></td></tr></table></figure>
+<p>上面的 $TESTDATA/saved_model_half_plus_two_cpu 指到的目錄底下即是一個模型的 <code>.pb</code> 檔與參數。</p>
+<p><img src="https://i.imgur.com/1Il88ZR.png" alt=""></p>
+<p>以上就是如何使用 TFServing 與 Docker 來部署模型提供服務。更多介紹可以查看 <a href="https://www.tensorflow.org/tfx/guide/serving" target="_blank" rel="noopener">官方文件</a>。</p>
+<h2 id="KFServing"><a href="#KFServing" class="headerlink" title="KFServing"></a>KFServing</h2><h3 id="KFServing-介紹"><a href="#KFServing-介紹" class="headerlink" title="KFServing 介紹"></a>KFServing 介紹</h3><p>既然 Tensorflow 已經可以做到模型部署，又為什麼需要 Kubeflow 提供的 KFServing 呢？原因如下，</p>
+<ol>
+<li><p>直接透過 Docker 部署服務沒辦法維護服務的可用性與彈性。 KFServing 搭配 Kubernetes ，服務將以 pod/service 存在，即可直接交由 Kubernetes 來維護 pod 生命週期，並且可以做到 <code>auto-sacling</code> ( 支援 scale down to 0 ) 應付流量，或是 <code>rolling update</code> 來 0-down-time 的更新模型。</p>
+</li>
+<li><p>Tensorflow Serving 只能支援 Tensorflow 產出的模型，但是框架如此之多， KFServing 作為工具箱即盡力支援每一種框架。</p>
+</li>
+<li><p>KFServing 底層由 Knative 與 istio 實作，因此可以做到同時部署兩個版本的模型進行 <code>金絲雀部署 (canary deployment)</code> 進行 <code>A/B test</code> 。</p>
+</li>
+<li><p>一個輸入可能是一張圖或是一段文字，在輸入給模型前需要進行前處理轉成 <code>np.array</code> 或是 <code>tensor</code> ，而原始的作法需要加上一個簡易的 HTTP Server，來做資料前處理在輸入進模型。而 KFServing 提供使用者簡單將前處理的函式實作完後，交由 KFServing 部署，並建立一個 pipeline 來串起前處理與實際的模型使用。如下圖，</p>
+</li>
+</ol>
+<p><img src="https://i.imgur.com/7a8U6xj.png" alt=""></p>
+<h3 id="事前準備"><a href="#事前準備" class="headerlink" title="事前準備"></a>事前準備</h3><p>如同部署一個 TFJob 一樣，使用 KFServing 來部署剛剛訓練好的模型也只需要編寫一個 CRD spec，且更簡單的是只需提供 GCS 的位址， KFServing 會幫你下載模型檔案建立起 pod/service  提供服務。</p>
+<p>在部署前須先在在 kubeflow namespace 標上 label</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl label namespace kubeflow serving.kubeflow.org/inferenceservice=enabled</span></span><br></pre></td></tr></table></figure>
+<p>Note:<br>出於某種原因 GCS 上面的資料夾可能出現同名的檔案，導致接下來的部署出錯，需要先手動刪除，如下<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">gs://$&#123;BUCKET&#125;/my-model/export/:</span><br><span class="line">gs://$&#123;BUCKET&#125;/my-model/export/ # 多餘的，需刪除</span><br><span class="line"></span><br><span class="line">gs://$&#123;BUCKET&#125;/my-model/export/1579521445/:</span><br><span class="line">gs://$&#123;BUCKET&#125;/my-model/export/1579521445/ # 多餘的，需刪除</span><br><span class="line">gs://$&#123;BUCKET&#125;/my-model/export/1579521445/saved_model.pb</span><br><span class="line"></span><br><span class="line">gs://$&#123;BUCKET&#125;/my-model/export/1579521445/variables/:</span><br><span class="line">gs://$&#123;BUCKET&#125;/my-model/export/1579521445/variables/ # 多餘的，需刪除</span><br><span class="line">gs://$&#123;BUCKET&#125;/my-model/export/1579521445/variables/variables.data-00000-of-00001</span><br><span class="line">gs://$&#123;BUCKET&#125;/my-model/export/1579521445/variables/variables.index</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用以下指令刪除</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> gsutil rm gs://<span class="variable">$&#123;BUCKET&#125;</span>/my-model/<span class="built_in">export</span>/</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<h3 id="使用-KFServing-部署模型"><a href="#使用-KFServing-部署模型" class="headerlink" title="使用 KFServing 部署模型"></a>使用 KFServing 部署模型</h3><p>我們的模型是 Mnist 手寫數字辨識模型，因此我們需要一個前處理的步驟將圖片透過 openCV 來做處理，以下是前處理的程式碼，需要按照 KFServing 提供的 framework 來實作成一個 Module。</p>
+<p>前處理的程式碼 <code>image_transformer.py</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">import kfserving</span><br><span class="line">from typing import List, Dict</span><br><span class="line">from PIL import Image</span><br><span class="line">import numpy as np</span><br><span class="line">import io</span><br><span class="line">import base64</span><br><span class="line">import cv2</span><br><span class="line"></span><br><span class="line">def image_transform(instance):</span><br><span class="line">    byte_array = base64.b64decode(instance[&apos;image_bytes&apos;][&apos;b64&apos;])</span><br><span class="line">    image = Image.open(io.BytesIO(byte_array))</span><br><span class="line">    #img = cv2.imread(image, cv2.IMREAD_GRAYSCALE)</span><br><span class="line">    g = cv2.resize(255 - np.asarray(image), (28, 28))</span><br><span class="line">    g = g.flatten() / 255.0</span><br><span class="line">    return g.tolist()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class ImageTransformer(kfserving.KFModel): # 繼承 kfserving.KFModel</span><br><span class="line">    def __init__(self, name: str, predictor_host: str):</span><br><span class="line">        super().__init__(name)</span><br><span class="line">        self.predictor_host = predictor_host</span><br><span class="line">        self._key = None</span><br><span class="line"></span><br><span class="line">    def preprocess(self, inputs: Dict) -&gt; Dict: # 實作 preprocess 函式</span><br><span class="line">        return &#123;&apos;instances&apos;: [image_transform(instance) for instance in inputs[&apos;instances&apos;]]&#125;</span><br></pre></td></tr></table></figure></p>
+<p>主程式 <code>main.py</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">import kfserving</span><br><span class="line">import argparse</span><br><span class="line">from .image_transformer import ImageTransformer</span><br><span class="line"></span><br><span class="line">DEFAULT_MODEL_NAME = &quot;model&quot;</span><br><span class="line"></span><br><span class="line">parser = argparse.ArgumentParser(parents=[kfserving.kfserver.parser])</span><br><span class="line">parser.add_argument(&apos;--model_name&apos;, default=DEFAULT_MODEL_NAME,</span><br><span class="line">                    help=&apos;The name that the model is served under.&apos;)</span><br><span class="line">parser.add_argument(&apos;--predictor_host&apos;,</span><br><span class="line">                    help=&apos;The URL for the model predict function&apos;, required=True)</span><br><span class="line"></span><br><span class="line">args, _ = parser.parse_known_args()</span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    transformer = ImageTransformer(</span><br><span class="line">        args.model_name, predictor_host=args.predictor_host)</span><br><span class="line">    kfserver = kfserving.KFServer()</span><br><span class="line">    kfserver.start(models=[transformer])</span><br></pre></td></tr></table></figure></p>
+<p>最後打包成 Docker image ，細節可以參考我的 <a href="https://github.com/ChanYiLin/kubeflow-e2e-example" target="_blank" rel="noopener">github repo</a> ，下面直接用我已經包好的 image 即可。</p>
+<p>有了模型以及前處理的 Docker image，我們就可以完成 KFServing 的部署 spec。</p>
+<p>將以下檔案存成 mnist_inference.yaml</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">"serving.kubeflow.org/v1alpha2"</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">"InferenceService"</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">"mnist"</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">"kubeflow"</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  default:</span></span><br><span class="line"><span class="attr">    predictor:</span> <span class="comment"># 模型</span></span><br><span class="line"><span class="attr">      minReplicas:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">      serviceAccountName:</span> <span class="string">k8s-sa</span> <span class="comment"># 必須填寫 SA</span></span><br><span class="line"><span class="attr">      tensorflow:</span></span><br><span class="line"><span class="attr">        storageUri:</span> <span class="string">"gs://$&#123;BUCKET&#125;/my-model/export"</span> <span class="comment"># 只需提供模型位置</span></span><br><span class="line"><span class="attr">    transformer:</span> <span class="comment"># 前處理</span></span><br><span class="line"><span class="attr">      minReplicas:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">      custom:</span></span><br><span class="line"><span class="attr">        container:</span></span><br><span class="line"><span class="attr">          image:</span> <span class="string">jackfantasy/image-transformer:v1</span> <span class="comment"># 將上述的前處理程式碼打包的 images</span></span><br><span class="line"><span class="attr">          name:</span> <span class="string">kfserving-container</span></span><br></pre></td></tr></table></figure>
+<p>部署該檔案，並等待該部署成功。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl apply -f mnist_inference.yaml</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> kubectl get inferenceservice -n kubeflow</span></span><br><span class="line">NAME    URL                                                 READY   DEFAULT TRAFFIC   CANARY TRAFFIC   AGE</span><br><span class="line">mnist   http://mnist.kubeflow.example.com/v1/models/mnist   True    100                                2m11s                              91s</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> kubectl get pods -l serving.kubeflow.org/inferenceservice=mnist -n kubeflow</span></span><br><span class="line"></span><br><span class="line">NAME                                                          READY   STATUS        RESTARTS   AGE</span><br><span class="line">mnist-predictor-default-w7bb5-deployment-78fff767c9-czwgp     2/2     Running       0          94s</span><br><span class="line">mnist-transformer-default-2fmkf-deployment-7bc5c85594-qn6v4   2/2     Running       0          94s</span><br></pre></td></tr></table></figure>
+<h3 id="使用模型進行-Inference"><a href="#使用模型進行-Inference" class="headerlink" title="使用模型進行 Inference"></a>使用模型進行 Inference</h3><p>將測試用的圖片轉成base64，將下圖存成 <code>0.png</code></p>
+<p><img src="https://i.imgur.com/5jEYZhO.png" alt=""></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> cat 0.png | base64 <span class="comment"># 將結果複製到下面的 input.json 中之 b64 的值</span></span></span><br></pre></td></tr></table></figure>
+<p>將以下檔案存成 input.json<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;instances&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;image_bytes&quot;: &#123;</span><br><span class="line">                &quot;b64&quot;: &quot;iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAABC0lEQVR4nGNgGHCg0/NvOw8Oudqnf//+dcQq5bLk5j+g5OMlfphyDt/+/v33dxtQehuGrMcHoPA/F9FNX//+/WyCJvfi798f9714GRjKgYp8USUfAIUawCyVa3//vrBAkmJb+Pvv3xIWCEcNqC4DSbIJaGYDVI6BfRGKpMrNv3/vI7htf/8eQPAu//t3XwfBbf//7z+cEw70oTmSJUCdf+Gcor9/v0njkgQGWiuSXNh+YCAhSX4QgLFZvSuAQfTBEy455e/PXDEQQ0h+1o6/ILAPYU4mkHurDQjO/gNL/a2TQUiyXfkLBf9BxKcQRiQXMBjOg0q+uXC8cQlalDCwZ7z5+3fJoww7hoEGAMUNp28BRiGTAAAAAElFTkSuQmCC&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接著我們就可以送出請求，使用我們訓練好的mnist模型做預測吧</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> MODEL_NAME=mnist</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> CLUSTER_IP=127.0.0.1:8080 <span class="comment"># 要另外開一個 terminal 做 port-forward，才能使用 Kubeflow 服務</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> SERVICE_HOSTNAME=$(kubectl get inferenceservice <span class="variable">$&#123;MODEL_NAME&#125;</span> -n kubeflow -o jsonpath=<span class="string">'&#123;.status.url&#125;'</span> | cut -d <span class="string">"/"</span> -f 3)</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> INPUT_PATH=@./input.json</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 利用 KFServing 提供的 endpoint 來使用模型進行預測</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> curl -v -H <span class="string">"Host: <span class="variable">$&#123;SERVICE_HOSTNAME&#125;</span>"</span> http://<span class="variable">$CLUSTER_IP</span>/v1/models/<span class="variable">$MODEL_NAME</span>:predict -d <span class="variable">$INPUT_PATH</span></span></span><br><span class="line"></span><br><span class="line">*   Trying 127.0.0.1...</span><br><span class="line">* TCP_NODELAY set</span><br><span class="line">* Connected to 127.0.0.1 (127.0.0.1) port 8080 (#0)</span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> POST /v1/models/mnist:predict HTTP/1.1</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> Host: mnist.kubeflow.example.com</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> User-Agent: curl/7.64.1</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> Accept: */*</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> Content-Length: 541</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> Content-Type: application/x-www-form-urlencoded</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"></span></span><br><span class="line">* upload completely sent off: 541 out of 541 bytes</span><br><span class="line">&lt; HTTP/1.1 200 OK</span><br><span class="line">&lt; content-length: 189</span><br><span class="line">&lt; content-type: text/html; charset=UTF-8</span><br><span class="line">&lt; date: Mon, 20 Jan 2020 20:07:11 GMT</span><br><span class="line">&lt; server: istio-envoy</span><br><span class="line">&lt; x-envoy-upstream-service-time: 47</span><br><span class="line">&lt;</span><br><span class="line">* Connection #0 to host 127.0.0.1 left intact</span><br><span class="line">&#123;"predictions": [&#123;</span><br><span class="line">"predictions": [0.219836846, 5.65285372e-05, 0.183175534, 0.140095666, 0.00257251319, 0.432028651, 0.00421907, 0.00483499933, 0.0129189081, 0.00026121721], </span><br><span class="line">"classes": 5 # 預測為 5，可見模型不太準確，可以再換個超參數重新訓練看看</span><br><span class="line">&#125;]&#125;* Closing connection 0</span><br></pre></td></tr></table></figure>
+<h2 id="小結"><a href="#小結" class="headerlink" title="小結"></a>小結</h2><p>以上就是使用 Kubeflow 提供的 Notebook Servers 、 tf-operator 、 KFServing 來完成一個典型的模型開發流程。可以發現還有許多不足的地方，</p>
+<ol>
+<li>比方說目前的模型不夠精準，可能需要進行 Hyperparameter Tuning ， Kubeflow 提出了 <a href="https://github.com/kubeflow/katib" target="_blank" rel="noopener">Katib</a> 服務。</li>
+<li>開發流程的每一個步驟仍然需要手動的部署與執行，且步驟與步驟之間缺乏銜接，使用者體驗仍然不夠流暢。 Kubeflow 提出了 <a href="https://github.com/kubeflow/pipelines" target="_blank" rel="noopener">Pipeline</a> 來建立一個工作流，使用者可以在一個工作流完成每一個階段的部署、執行與驗證。</li>
+<li>Jupyterhub Notebook 開發完模型後，使用者必須手動打包 Container image 來供後續使用， Kubeflow 提出了 <a href="https://github.com/kubeflow/fairing" target="_blank" rel="noopener">Fairing</a> ，使用者可以從 Notebook 直接打包 image 。</li>
+</ol>
+<p>下面這張圖是完整個 Kubeflow Scope</p>
+<p><img src="https://i.imgur.com/uzQkC4D.png" alt=""></p>
+<p>而 Kubeflow 將在近期推出 v1.0 ，而此版本最重要的就是確保 Kubeflow Community 認為最重要的 Custom User Journey 可用且可靠。</p>
+<p><img src="https://i.imgur.com/X0LdgDV.png" alt=""></p>
+<p>本篇的教學已經基本涵括了大部分的 Custom User Journey ， 將會在接下來幾篇針對 Pipeline 、與其餘服務做介紹與使用教學。</p>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Kubeflow/" rel="tag"># Kubeflow</a>
+            
+              <a href="/tags/Kubernetes/" rel="tag"># Kubernetes</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/kubeflow-0-7-update.html" rel="next" title="Kubeflow v0.7 新功能與回顧介紹">
+                  <i class="fa fa-chevron-left"></i> Kubeflow v0.7 新功能與回顧介紹
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    
+  <div class="comments" id="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#簡介"><span class="nav-number">1.</span> <span class="nav-text">簡介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#事前準備與前言"><span class="nav-number">1.1.</span> <span class="nav-text">事前準備與前言</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-GKE-部署-Kubeflow"><span class="nav-number">2.</span> <span class="nav-text">使用 GKE 部署 Kubeflow</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-GKE-部署-Kubernetes"><span class="nav-number">2.1.</span> <span class="nav-text">使用 GKE 部署 Kubernetes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署-Kubeflow"><span class="nav-number">2.2.</span> <span class="nav-text">部署 Kubeflow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#創建-Service-Account"><span class="nav-number">2.3.</span> <span class="nav-text">創建 Service Account</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kubeflow-部署完成"><span class="nav-number">2.4.</span> <span class="nav-text">Kubeflow 部署完成</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-tf-operator-進行分散式訓練"><span class="nav-number">3.</span> <span class="nav-text">使用 tf-operator 進行分散式訓練</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tf-operator-與-TFJob-介紹"><span class="nav-number">3.1.</span> <span class="nav-text">tf-operator 與 TFJob 介紹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服務發現"><span class="nav-number">3.2.</span> <span class="nav-text">服務發現</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#進行-Mnist-分散式訓練"><span class="nav-number">3.3.</span> <span class="nav-text">進行 Mnist 分散式訓練</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署-TFJob-進行訓練"><span class="nav-number">3.4.</span> <span class="nav-text">部署 TFJob 進行訓練</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Inference"><span class="nav-number">4.</span> <span class="nav-text">Inference</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TFServing-與使用"><span class="nav-number">4.1.</span> <span class="nav-text">TFServing 與使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KFServing"><span class="nav-number">5.</span> <span class="nav-text">KFServing</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#KFServing-介紹"><span class="nav-number">5.1.</span> <span class="nav-text">KFServing 介紹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事前準備"><span class="nav-number">5.2.</span> <span class="nav-text">事前準備</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-KFServing-部署模型"><span class="nav-number">5.3.</span> <span class="nav-text">使用 KFServing 部署模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用模型進行-Inference"><span class="nav-number">5.4.</span> <span class="nav-text">使用模型進行 Inference</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小結"><span class="nav-number">6.</span> <span class="nav-text">小結</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" src="/images/me.jpg" alt="Jack Lin">
+  <p class="site-author-name" itemprop="name">Jack Lin</p>
+  <div class="site-description" itemprop="description">目前任職於 InfuseAI. 專注於Kubeflow與Kubernetes. 同時也是 Kubeflow member與Kubeflow/tf-operator reviewer.</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+      
+        
+      
+        <a href="https://github.com/ChanYiLin" title="GitHub &rarr; https://github.com/ChanYiLin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i></a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+      
+        
+      
+        <a href="https://www.linkedin.com/in/jack-lin-a43506a2/" title="Linkedin &rarr; https://www.linkedin.com/in/jack-lin-a43506a2/" rel="noopener" target="_blank"><i class="fa fa-fw fa-linkedin"></i></a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+      
+        
+      
+        <a href="https://www.facebook.com/yourname" title="FB Page &rarr; https://www.facebook.com/yourname" rel="noopener" target="_blank"><i class="fa fa-fw fa-facebook"></i></a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jack Lin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+    <span class="post-meta-divider">|</span>
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://jacklinblog-1.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  function disqus_config() {
+    this.page.url = "https://chanyilin.github.io/kubeflow-e2e-tutorial.html";
+    this.page.identifier = "kubeflow-e2e-tutorial.html";
+    this.page.title = '完整 Kubeflow 使用教學 - 開發 ML 模型、進行分散式訓練與部署服務';};
+  function loadComments() {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://jacklinblog-1.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  }
+    window.addEventListener('load', loadComments, false);
+  
+</script>
+
+</body>
+</html>
